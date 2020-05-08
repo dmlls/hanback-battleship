@@ -1,5 +1,7 @@
 package com.diego.hanbackbattleship.model;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -10,11 +12,18 @@ public class Ocean {
     private static final int WIDTH = 8;
     private List<Ship> ships = new ArrayList<>(); // ships on the ocean
 
+    public Ocean() {}
+
+    public Ocean(List<Ship> ships) {
+        this.ships = ships;
+    }
+
     public void addShip(Ship ship) {
         ships.add(ship);
     }
 
     public boolean isThereShip(int coordinateX, int coordinateY) {
+        Log.println(Log.DEBUG, Ocean.class.toString(), ships.toString());
         for (Ship ship : ships) {
             if (isTheShipInCoordinates(ship, coordinateX, coordinateY)) {
                 return true;

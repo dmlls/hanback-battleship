@@ -14,12 +14,20 @@ public class Referee {
         ocean = new Ocean();
     }
 
+    public Referee(List<Ship> ships) {
+        ocean = new Ocean(ships);
+    }
+
     public void addShip(ShipType shipType, int coorX, int coorY, Orientation orientation) {
         ocean.addShip(new Ship(shipType, coorX, coorY, orientation));
     }
 
     public ShipType[] getShipTypes() {
         return ShipType.values();
+    }
+
+    public Ocean getOcean() {
+        return ocean;
     }
 
     public String printOcean() {
