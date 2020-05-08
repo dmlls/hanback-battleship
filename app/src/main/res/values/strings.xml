@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Hanback Battleship</string>
+    <string name="introduce_coordinates">Introduce coordinates for ship</string>
+    <string name="coordinateX">Coordinate X</string>
+    <string name="coordinateY">Coordinate Y</string>
+    <string name="ok">OK</string>
+    <string-array name="orientation">
+        <item>Horizontal</item>
+        <item>Vertical</item>
+    </string-array>
+</resources>
