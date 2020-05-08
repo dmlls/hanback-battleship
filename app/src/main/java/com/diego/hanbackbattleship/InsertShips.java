@@ -2,7 +2,9 @@ package com.diego.hanbackbattleship;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,9 +15,12 @@ import android.widget.TextView;
 
 import com.diego.hanbackbattleship.control.Referee;
 import com.diego.hanbackbattleship.model.Orientation;
+import com.diego.hanbackbattleship.model.Ship;
 import com.diego.hanbackbattleship.model.ShipType;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+import java.util.ArrayList;
+
+public class InsertShips extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private Referee referee;
     private ShipType[] ships;
     private int shipCounter;
@@ -29,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         referee = new Referee();
         ships = referee.getShipTypes();
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_insert_ships);
 
         shipName = findViewById(R.id.ship_type);
         shipName.setText(ships[shipCounter].toString());
@@ -59,16 +64,20 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 coordinateY.getText().clear();
                 coordinateX.requestFocus();
                 shipName.setText(ships[shipCounter].toString());
-            } /* else if (shipCounter == ShipType.values().length) {
-                okButton.setText();
-            } */
+            } else if (shipCounter == ShipType.values().length) {
+                okButton.setText(R.string.next);
+            }
             displayShips();
+        } else {
+            Intent intent = new Intent(this, HitShips.class);
+            intent.putParcelableArrayListExtra(HitShips.EXTRA_SHIP, (ArrayList<Ship>) referee.getOcean().getShips());
+            startActivity(intent);
         }
     }
 
     private void displayShips() {
-        TextView ships = findViewById(R.id.ship_list);
-        ships.setText(referee.printOcean());
+        TextView ocean = findViewById(R.id.ocean);
+        ocean.setText(referee.printOcean());
     }
 
     @Override
