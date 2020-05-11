@@ -22,17 +22,7 @@ public class Ocean {
         ships.add(ship);
     }
 
-    public boolean isThereShip(int coordinateX, int coordinateY) {
-        Log.println(Log.DEBUG, Ocean.class.toString(), ships.toString());
-        for (Ship ship : ships) {
-            if (isTheShipInCoordinates(ship, coordinateX, coordinateY)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isTheShipInCoordinates(Ship ship, int coordinateX, int coordinateY) {
+    private boolean isShipInCoordinates(Ship ship, int coordinateX, int coordinateY) {
         int[] shipBaseCoords = ship.getBaseCoordinates();
         if (ship.getOrientation() == Orientation.HORIZONTAL) {
             return shipBaseCoords[1] <= coordinateY &&
@@ -43,6 +33,15 @@ public class Ocean {
                     coordinateX < shipBaseCoords[0] + ship.getType().getSize() &&
                     shipBaseCoords[1] == coordinateY;
         }
+    }
+
+    public Ship getShip(int coordinateX, int coordinateY) {
+        for (Ship ship : ships) {
+            if (isShipInCoordinates(ship, coordinateX, coordinateY)) {
+                return ship;
+            }
+        }
+        return null;
     }
 
     public List<Ship> getShips() {
@@ -57,16 +56,33 @@ public class Ocean {
         return WIDTH;
     }
 
+    public String printOcean() {
+        return toString();
+    }
+
     @Override
     @NonNull
     public String toString() {
         StringBuilder ocean = new StringBuilder();
+        Ship ship;
         for (int i = 0; i < HEIGHT; i++) {
             for (int j = 0; j < WIDTH; j++) {
-                if (isThereShip(i, j)) {
-                    ocean.append("■  ");
+                ship = getShip(i, j);
+                if (ship != null) {
+                    if ((ship.getOrientation().equals(Orientation.HORIZONTAL) &&
+                            ship.getHits()[j - ship.getBaseCoordinates()[1]]) ||
+                            (ship.getOrientation().equals(Orientation.VERTICAL) &&
+                                    ship.getHits()[i - ship.getBaseCoordinates()[0]])) {
+                        if (ship.getState().equals(ShipState.SUNKEN)) {
+                            ocean.append("■");
+                        } else {
+                            ocean.append("◪");
+                        }
+                    } else {
+                        ocean.append("■");
+                    }
                 } else {
-                    ocean.append("▩  ");
+                    ocean.append("▩");
                 }
             }
             ocean.append("\n");

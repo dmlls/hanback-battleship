@@ -29,7 +29,8 @@
         android:layout_marginTop="30dp"
         android:layout_marginHorizontal="100dp"
         android:inputType="number"
-        android:hint="@string/coordinateX" />
+        android:hint="@string/coordinateX"
+        android:importantForAutofill="no" />
 
     <EditText
         android:id="@+id/coordinate_y"
@@ -38,7 +39,8 @@
         android:layout_marginTop="10dp"
         android:layout_marginHorizontal="100dp"
         android:inputType="number"
-        android:hint="@string/coordinateY" />
+        android:hint="@string/coordinateY"
+        android:importantForAutofill="no" />
 
     <Spinner
         android:id="@+id/orientation"
@@ -59,6 +61,8 @@
         android:id="@+id/ocean"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp" />
+        android:layout_marginTop="40dp"
+        android:textSize="20sp"
+        android:lineSpacingMultiplier="0.55" />
 
 </LinearLayout>
