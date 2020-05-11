@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,7 +21,7 @@ import java.util.ArrayList;
 
 public class InsertShips extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private Referee referee;
-    private ShipType[] ships;
+    private ShipType[] shipTypes;
     private int shipCounter;
     private Orientation orientation = Orientation.HORIZONTAL;
 
@@ -32,12 +31,12 @@ public class InsertShips extends AppCompatActivity implements AdapterView.OnItem
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         referee = new Referee();
-        ships = referee.getShipTypes();
+        shipTypes = referee.getShipTypes();
 
         setContentView(R.layout.activity_insert_ships);
 
         shipName = findViewById(R.id.ship_type);
-        shipName.setText(ships[shipCounter].toString());
+        shipName.setText(shipTypes[shipCounter].toString());
 
         Spinner orientationSpinner = findViewById(R.id.orientation);
         orientationSpinner.setOnItemSelectedListener(this);
@@ -57,20 +56,20 @@ public class InsertShips extends AppCompatActivity implements AdapterView.OnItem
             int coorX = Integer.parseInt(coordinateX.getText().toString());
             int coorY = Integer.parseInt(coordinateY.getText().toString());
 
-            referee.addShip(ships[shipCounter], coorX, coorY, orientation);
+            referee.addShip(shipTypes[shipCounter], coorX, coorY, orientation);
             shipCounter++;
             if (shipCounter < ShipType.values().length) {
                 coordinateX.getText().clear();
                 coordinateY.getText().clear();
                 coordinateX.requestFocus();
-                shipName.setText(ships[shipCounter].toString());
+                shipName.setText(shipTypes[shipCounter].toString());
             } else if (shipCounter == ShipType.values().length) {
                 okButton.setText(R.string.next);
             }
             displayShips();
         } else {
-            Intent intent = new Intent(this, HitShips.class);
-            intent.putParcelableArrayListExtra(HitShips.EXTRA_SHIP, (ArrayList<Ship>) referee.getOcean().getShips());
+            Intent intent = new Intent(this, LaunchMissile.class);
+            intent.putParcelableArrayListExtra(LaunchMissile.EXTRA_SHIPS, (ArrayList<Ship>) referee.getOcean().getShips());
             startActivity(intent);
         }
     }

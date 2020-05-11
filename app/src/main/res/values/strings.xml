@@ -5,6 +5,11 @@
     <string name="coordinateY">Coordinate Y</string>
     <string name="ok">Ok</string>
     <string name="next">Next</string>
+    <string name="launch">Launch missile</string>
+    <string name="legend">Legend:</string>
+    <string name="water">▩ water</string>
+    <string name="hit">◪ ship hit</string>
+    <string name="sunken">■ ship sunk</string>
     <string-array name="orientation">
         <item>Horizontal</item>
         <item>Vertical</item>
