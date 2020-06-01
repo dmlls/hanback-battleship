@@ -13,9 +13,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.diego.hanbackbattleship.control.Referee;
+import com.diego.hanbackbattleship.model.DataHolder;
+import com.diego.hanbackbattleship.model.OceanCell;
 import com.diego.hanbackbattleship.model.Orientation;
-import com.diego.hanbackbattleship.model.Ship;
 import com.diego.hanbackbattleship.model.ShipType;
+import com.diego.hanbackbattleship.model.DataHolder;
 
 import java.util.ArrayList;
 
@@ -69,7 +71,7 @@ public class InsertShips extends AppCompatActivity implements AdapterView.OnItem
             displayShips();
         } else {
             Intent intent = new Intent(this, LaunchMissile.class);
-            intent.putParcelableArrayListExtra(LaunchMissile.EXTRA_SHIPS, (ArrayList<Ship>) referee.getOcean().getShips());
+            DataHolder.getInstance().save(LaunchMissile.ID_CELLS, referee.getOcean().getCells());
             startActivity(intent);
         }
     }
