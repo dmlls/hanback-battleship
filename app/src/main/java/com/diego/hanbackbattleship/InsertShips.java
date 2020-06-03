@@ -12,17 +12,14 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.diego.hanbackbattleship.control.Referee;
+import com.diego.hanbackbattleship.control.Player;
 import com.diego.hanbackbattleship.model.DataHolder;
-import com.diego.hanbackbattleship.model.OceanCell;
 import com.diego.hanbackbattleship.model.Orientation;
 import com.diego.hanbackbattleship.model.ShipType;
-import com.diego.hanbackbattleship.model.DataHolder;
-
-import java.util.ArrayList;
 
 public class InsertShips extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
-    private Referee referee;
+    private Player player;
+    private Player opponent;
     private ShipType[] shipTypes;
     private int shipCounter;
     private Orientation orientation = Orientation.HORIZONTAL;
@@ -32,8 +29,13 @@ public class InsertShips extends AppCompatActivity implements AdapterView.OnItem
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        referee = new Referee();
-        shipTypes = referee.getShipTypes();
+        player = new Player();
+        opponent = new Player();
+
+        player.setOpponent(opponent);
+        opponent.setOpponent(player);
+
+        shipTypes = player.getShipTypes();
 
         setContentView(R.layout.activity_insert_ships);
 
@@ -58,7 +60,7 @@ public class InsertShips extends AppCompatActivity implements AdapterView.OnItem
             int coorX = Integer.parseInt(coordinateX.getText().toString());
             int coorY = Integer.parseInt(coordinateY.getText().toString());
 
-            referee.addShip(shipTypes[shipCounter], coorX, coorY, orientation);
+            player.addShip(shipTypes[shipCounter], coorX, coorY, orientation);
             shipCounter++;
             if (shipCounter < ShipType.values().length) {
                 coordinateX.getText().clear();
@@ -71,14 +73,14 @@ public class InsertShips extends AppCompatActivity implements AdapterView.OnItem
             displayShips();
         } else {
             Intent intent = new Intent(this, LaunchMissile.class);
-            DataHolder.getInstance().save(LaunchMissile.ID_CELLS, referee.getOcean().getCells());
+            DataHolder.getInstance().save(LaunchMissile.ID_CELLS, player.getOcean().getAllCells());
             startActivity(intent);
         }
     }
 
     private void displayShips() {
         TextView ocean = findViewById(R.id.ocean);
-        ocean.setText(referee.printOcean());
+        ocean.setText(player.printOcean());
     }
 
     @Override

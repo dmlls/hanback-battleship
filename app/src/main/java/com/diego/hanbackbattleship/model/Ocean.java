@@ -42,8 +42,12 @@ public class Ocean {
         return WIDTH;
     }
 
-    public OceanCell[][] getCells() {
+    public OceanCell[][] getAllCells() {
         return cells;
+    }
+
+    public OceanCell getCell(int coorX, int coorY) {
+        return cells[coorX][coorY];
     }
 
     public String printOcean() {
