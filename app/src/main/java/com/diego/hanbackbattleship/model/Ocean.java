@@ -4,7 +4,9 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Ocean {
@@ -12,6 +14,7 @@ public class Ocean {
     private static final int WIDTH = 8;
     private OceanCell[][] cells = new OceanCell[HEIGHT][WIDTH];
     private List<Ship> ships = new ArrayList<>(); // ships on the ocean
+    private List<OceanCell> occupiedCells = new ArrayList<>();
 
     public Ocean() {
         for (int x = 0; x < HEIGHT; x++) {
@@ -28,6 +31,12 @@ public class Ocean {
 
     public void addShip(Ship ship) {
         ships.add(ship);
+        occupiedCells.addAll(ship.getCells());
+    }
+
+    public void removeShip(Ship ship) {
+        ships.remove(ship);
+        occupiedCells.removeAll(ship.getCells());
     }
 
     public List<Ship> getShips() {
@@ -42,12 +51,16 @@ public class Ocean {
         return WIDTH;
     }
 
+    public OceanCell getCell(int coorX, int coorY) {
+        return cells[coorX][coorY];
+    }
+
     public OceanCell[][] getAllCells() {
         return cells;
     }
 
-    public OceanCell getCell(int coorX, int coorY) {
-        return cells[coorX][coorY];
+    public List<OceanCell> getOccupiedCells() {
+        return occupiedCells;
     }
 
     public String printOcean() {

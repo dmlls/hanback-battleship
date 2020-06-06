@@ -7,46 +7,78 @@ import com.diego.hanbackbattleship.model.ScoreValues;
 import com.diego.hanbackbattleship.model.Ship;
 import com.diego.hanbackbattleship.model.ShipType;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class Player {
     private Ocean ocean;
     private Player opponent;
     private int score;
-    private boolean previouslyHit; // true if in the player's last turn, they hit opponent's boat
-    private boolean previouslySunk; // true if in the player's last turn, they sunk opponent's boat
+    private boolean previouslyHitOpponent; // true if in the player's last turn, they hit opponent's boat
+    private boolean previouslySunkOpponent; // true if in the player's last turn, they sunk opponent's boat
 
     public Player() {
         ocean = new Ocean();
     }
 
-    public Player(OceanCell[][] cells) {
-        ocean = new Ocean(cells);
+    public Player(Ocean ocean, Player opponent, int score) {
+        this.ocean = ocean;
+        this.opponent = opponent;
+        this.score = score;
     }
 
-    public void addShip(ShipType shipType, int coorX, int coorY, Orientation orientation) {
+    public boolean addShip(ShipType shipType, int coorX, int coorY, Orientation orientation) { // true if ship could be added, false otherwise
         Ship ship = new Ship(shipType);
+        List<OceanCell> cells = new ArrayList<>();
+        int shipSize = shipType.getSize();
         if (orientation.equals(Orientation.HORIZONTAL)) {
-            for (int y = coorY; y < coorY + shipType.getSize(); y++) {
-                ocean.getAllCells()[coorX][y].setShip(ship);
-                ship.getCells().add(ocean.getAllCells()[coorX][y]);
+            if (coorY + shipSize > Ocean.getWidth()) {
+                coorY -= coorY + shipSize - Ocean.getWidth(); // readjust (move ship to the left)
+            }
+            for (int y = coorY; y < coorY + shipSize; y++) {
+                cells.add(ocean.getCell(coorX, y));
             }
         } else {
-            for (int x = coorX; x < coorX + shipType.getSize(); x++) {
-                ocean.getAllCells()[x][coorY].setShip(ship);
-                ship.getCells().add(ocean.getAllCells()[x][coorY]);
+            if (coorX + shipSize > Ocean.getHeight()) {
+                coorX -= coorX + shipSize - Ocean.getHeight(); // readjust (move ship upwards)
+            }
+            for (int x = coorX; x < coorX + shipSize; x++) {
+                cells.add(ocean.getCell(x, coorY));
             }
         }
+        if (!Collections.disjoint(ocean.getOccupiedCells(), cells)) { // if they have cells in common
+            return false;
+        }
+        for (OceanCell cell : cells) {
+            cell.setShip(ship);
+            ship.addCell(cell);
+        }
         ocean.addShip(ship);
+        return true;
+    }
+
+    public void removeShip(Ship ship) {
+        ocean.removeShip(ship);
     }
 
     public void launchMissile(int coorX, int coorY) {
-        OceanCell cell = opponent.getOcean().getCell(coorX, coorY);
-        if (!cell.wasVisited()) {
-            cell.setVisited(true);
-            Ship opponentShip = cell.getShip();
+        OceanCell opponentCell = opponent.getOcean().getCell(coorX, coorY);
+        if (!opponentCell.wasVisited()) {
+            opponentCell.setVisited(true);
+            Ship opponentShip = opponentCell.getShip();
             if (opponentShip != null) {
-                opponentShip.hit(ocean.getAllCells()[coorX][coorY]);
-                updateScore(opponentShip);
+                opponentShip.hit(opponentCell);
+                if (opponentShip.isSunken()) {
+                    previouslySunkOpponent = true;
+                } else {
+                    previouslyHitOpponent = true;
+                }
+            } else {
+                previouslySunkOpponent = false;
+                previouslyHitOpponent = false;
             }
+            updateScore(opponentShip);
         }
     }
 
@@ -59,14 +91,11 @@ public class Player {
                 this.score += ScoreValues.HIT.getValue();
                 opponent.updateScore(ScoreValues.HIT_BY_OPP.getValue());
             }
-            if (previouslyHit) {
+            if (previouslyHitOpponent) {
                 this.score += ScoreValues.HIT_PREVIOUSLY.getValue();
-            } else if (previouslySunk) {
-                this.score += ScoreValues.SUNK_PREVIOUSLY.getValue();
-            }
-            if (opponent.wasPreviouslyHitByOpponent()) {
                 opponent.updateScore(ScoreValues.HIT_PREV_BY_OPP.getValue());
-            } else if (opponent.wasPreviouslySunkByOpponent()) {
+            } else if (previouslySunkOpponent) {
+                this.score += ScoreValues.SUNK_PREVIOUSLY.getValue();
                 opponent.updateScore(ScoreValues.SUNK_PREV_BY_OPP.getValue());
             }
         }
@@ -74,6 +103,15 @@ public class Player {
 
     public void updateScore(int change) {
         score += change;
+    }
+
+    public boolean hasLost() {
+        for (Ship ship : ocean.getShips()) {
+            if (!ship.isSunken()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public ShipType[] getShipTypes() {
@@ -84,16 +122,32 @@ public class Player {
         return ocean;
     }
 
-    public boolean wasPreviouslyHitByOpponent() {
-        return previouslyHit;
+    public Player getOpponent() {
+        return opponent;
     }
 
-    public boolean wasPreviouslySunkByOpponent() {
-        return previouslySunk;
+    public int getScore() {
+        return score;
+    }
+
+    public boolean getPreviouslyHitOpponent() {
+        return previouslyHitOpponent;
+    }
+
+    public boolean getPreviouslySunkOpponent() {
+        return previouslySunkOpponent;
     }
 
     public void setOpponent(Player opponent) {
         this.opponent = opponent;
+    }
+
+    public void setPreviouslyHitOpponent(boolean previouslyHitOpponent) {
+        this.previouslyHitOpponent = previouslyHitOpponent;
+    }
+
+    public void setPreviouslySunkOpponent(boolean previouslySunkOpponent) {
+        this.previouslySunkOpponent = previouslySunkOpponent;
     }
 
     public String printOcean() {

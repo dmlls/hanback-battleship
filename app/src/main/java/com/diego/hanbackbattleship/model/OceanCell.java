@@ -42,4 +42,9 @@ public class OceanCell {
     public void setVisited(boolean visited) {
         this.visited = visited;
     }
+
+    @Override
+    public String toString() {
+        return "[" + String.valueOf(coordinates[0] + ", " + String.valueOf(coordinates[1]) + "]");
+    }
 }

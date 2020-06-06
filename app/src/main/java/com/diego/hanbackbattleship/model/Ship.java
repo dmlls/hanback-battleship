@@ -43,12 +43,12 @@ public class Ship {
         return hits;
     }
 
-    public void setCells(List<OceanCell> cells) {
-        this.cells = cells;
+    public void addCell(OceanCell cell) {
+        cells.add(cell);
     }
 
-    public void setSunken(boolean sunken) {
-        this.sunken = sunken;
+    public void setCells(List<OceanCell> cells) {
+        this.cells = cells;
     }
 
     @Override

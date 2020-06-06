@@ -5,6 +5,8 @@
     <string name="coordinateY">Coordinate Y</string>
     <string name="ok">Ok</string>
     <string name="next">Next</string>
+    <string name="your_turn">Your turn</string>
+    <string name="opponents_turn">Opponent\'s turn</string>
     <string name="launch">Launch missile</string>
     <string name="legend">Legend:</string>
     <string name="water">▩ water</string>
@@ -14,4 +16,6 @@
         <item>Horizontal</item>
         <item>Vertical</item>
     </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

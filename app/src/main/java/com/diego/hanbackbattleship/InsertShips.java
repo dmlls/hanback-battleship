@@ -72,8 +72,9 @@ public class InsertShips extends AppCompatActivity implements AdapterView.OnItem
             }
             displayShips();
         } else {
-            Intent intent = new Intent(this, LaunchMissile.class);
-            DataHolder.getInstance().save(LaunchMissile.ID_CELLS, player.getOcean().getAllCells());
+            Intent intent = new Intent(this, BattleActivity.class);
+            DataHolder.getInstance().save(BattleActivity.ID_OCEAN, player.getOcean());
+            DataHolder.getInstance().save(BattleActivity.ID_OPPONENT, player.getOpponent());
             startActivity(intent);
         }
     }
