@@ -9,7 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".BattleActivity"></activity>
+        <activity android:name=".GameOver"></activity>
+        <activity android:name=".BattleActivity" />
         <activity android:name=".InsertShips">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

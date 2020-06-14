@@ -2,6 +2,7 @@ package com.diego.hanbackbattleship;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -73,25 +74,29 @@ public class BattleActivity extends AppCompatActivity {
         coordinateX.getText().clear();
         coordinateY.getText().clear();
 
-        okButton.setVisibility(View.GONE);
-        nextButton.setVisibility(View.VISIBLE);
+        if (!isGameFinished()) {
+            okButton.setVisibility(View.GONE);
+            nextButton.setVisibility(View.VISIBLE);
+        } else {
+            Intent intent = new Intent(this, GameOver.class);
+            intent.putExtra(GameOver.EXTRA_WINNER, getWinner().equals(player));
+            startActivity(intent);
+        }
     }
 
     public void onNextClicked(View view) {
-        if (!isGameFinished()) {
-            changeTurn();
-            if (getPlayerTurn().equals(opponent)) {
-                turn.setText(R.string.opponents_turn);
-                opponent.launchMissile();
-            } else {
-                turn.setText(R.string.your_turn);
-                coordinateX.setVisibility(View.VISIBLE);
-                coordinateY.setVisibility(View.VISIBLE);
-                okButton.setVisibility(View.VISIBLE);
-                nextButton.setVisibility(View.GONE);
-            }
-            printOcean();
+        changeTurn();
+        if (getPlayerTurn().equals(opponent)) {
+            turn.setText(R.string.opponents_turn);
+            opponent.launchMissile();
+        } else {
+            turn.setText(R.string.your_turn);
+            coordinateX.setVisibility(View.VISIBLE);
+            coordinateY.setVisibility(View.VISIBLE);
+            okButton.setVisibility(View.VISIBLE);
+            nextButton.setVisibility(View.GONE);
         }
+        printOcean();
     }
 
     private void printOcean() {

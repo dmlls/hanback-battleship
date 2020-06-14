@@ -63,6 +63,10 @@ public class Ocean {
         return occupiedCells;
     }
 
+    public boolean isThereShipInCoords(int coorX, int coorY) {
+        return cells[coorX][coorY].getShip() != null;
+    }
+
     public String printOcean() {
         return toString();
     }

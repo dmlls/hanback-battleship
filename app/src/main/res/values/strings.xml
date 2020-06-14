@@ -16,6 +16,8 @@
         <item>Horizontal</item>
         <item>Vertical</item>
     </string-array>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="you_won">YOU WON!</string>
+    <string name="game_over">GAME OVER</string>
+    <string name="play_again">play again</string>
+    <string name="already_boat_alert">There\'s already a boat there.</string>
 </resources>

@@ -14,12 +14,12 @@ import android.widget.TextView;
 
 import com.diego.hanbackbattleship.control.Player;
 import com.diego.hanbackbattleship.model.DataHolder;
+import com.diego.hanbackbattleship.model.Ocean;
 import com.diego.hanbackbattleship.model.Orientation;
 import com.diego.hanbackbattleship.model.ShipType;
 
 public class InsertShips extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private Player player;
-    private Player opponent;
     private ShipType[] shipTypes;
     private int shipCounter;
     private Orientation orientation = Orientation.HORIZONTAL;
@@ -30,7 +30,7 @@ public class InsertShips extends AppCompatActivity implements AdapterView.OnItem
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         player = new Player();
-        opponent = new Player();
+        Player opponent = new Player();
 
         player.setOpponent(opponent);
         opponent.setOpponent(player);
@@ -52,30 +52,37 @@ public class InsertShips extends AppCompatActivity implements AdapterView.OnItem
     }
 
     public void onOkClicked(View view) {
-        if (shipCounter < ShipType.values().length) {
-            EditText coordinateX = (EditText) findViewById(R.id.coordinate_x);
-            EditText coordinateY = (EditText) findViewById(R.id.coordinate_y);
-            Button okButton = (Button) findViewById(R.id.ok_button);
+        EditText coordinateX = (EditText) findViewById(R.id.coordinate_x);
+        EditText coordinateY = (EditText) findViewById(R.id.coordinate_y);
+        TextView alert = (TextView) findViewById(R.id.already_boat_alert);
 
-            int coorX = Integer.parseInt(coordinateX.getText().toString());
-            int coorY = Integer.parseInt(coordinateY.getText().toString());
+        int coorX = Integer.parseInt(coordinateX.getText().toString());
+        int coorY = Integer.parseInt(coordinateY.getText().toString());
 
-            player.addShip(shipTypes[shipCounter], coorX, coorY, orientation);
-            shipCounter++;
-            if (shipCounter < ShipType.values().length) {
-                coordinateX.getText().clear();
-                coordinateY.getText().clear();
-                coordinateX.requestFocus();
-                shipName.setText(shipTypes[shipCounter].toString());
-            } else if (shipCounter == ShipType.values().length) {
-                okButton.setText(R.string.next);
-            }
-            displayShips();
+        if (player.getOcean().isThereShipInCoords(coorX, coorY) && shipCounter != ShipType.values().length) {
+            alert.setVisibility(View.VISIBLE);
         } else {
-            Intent intent = new Intent(this, BattleActivity.class);
-            DataHolder.getInstance().save(BattleActivity.ID_OCEAN, player.getOcean());
-            DataHolder.getInstance().save(BattleActivity.ID_OPPONENT, player.getOpponent());
-            startActivity(intent);
+            alert.setVisibility(View.GONE);
+            if (shipCounter < ShipType.values().length) {
+                Button okButton = (Button) findViewById(R.id.ok_button);
+
+                player.addShip(shipTypes[shipCounter], coorX, coorY, orientation);
+                shipCounter++;
+                if (shipCounter < ShipType.values().length) {
+                    coordinateX.getText().clear();
+                    coordinateY.getText().clear();
+                    coordinateX.requestFocus();
+                    shipName.setText(shipTypes[shipCounter].toString());
+                } else if (shipCounter == ShipType.values().length) {
+                    okButton.setText(R.string.next);
+                }
+                displayShips();
+            } else {
+                Intent intent = new Intent(this, BattleActivity.class);
+                DataHolder.getInstance().save(BattleActivity.ID_OCEAN, player.getOcean());
+                DataHolder.getInstance().save(BattleActivity.ID_OPPONENT, player.getOpponent());
+                startActivity(intent);
+            }
         }
     }
 
