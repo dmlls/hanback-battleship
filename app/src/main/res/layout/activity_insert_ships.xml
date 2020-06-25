@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:text="@string/introduce_coordinates"
         android:textSize="15sp"
-        android:layout_marginTop="40dp" />
+        android:layout_marginTop="10dp" />
 
     <TextView
         android:id="@+id/ship_type"
@@ -22,31 +22,35 @@
         android:textSize="25sp"
         android:layout_marginTop="20dp"/>
 
-    <EditText
-        android:id="@+id/coordinate_x"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:layout_marginHorizontal="100dp"
-        android:inputType="number"
-        android:hint="@string/coordinateX"
-        android:importantForAutofill="no" />
-
-    <EditText
-        android:id="@+id/coordinate_y"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginHorizontal="100dp"
-        android:inputType="number"
-        android:hint="@string/coordinateY"
-        android:importantForAutofill="no" />
-
     <Spinner
         android:id="@+id/orientation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp" />
+
+    <Spinner
+        android:id="@+id/quarter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:id="@+id/ocean"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textSize="20sp"
+        android:lineSpacingMultiplier="0.9" />
+
+    <Button
+        android:id="@+id/ok_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/ok"
+        android:textAllCaps="true"
+        android:enabled="false"
+        android:onClick="onOkClicked"/>
 
     <TextView
         android:id="@+id/already_boat_alert"
@@ -54,24 +58,7 @@
         android:layout_height="wrap_content"
         android:text="@string/already_boat_alert"
         android:textColor="@color/red"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:visibility="gone" />
-
-    <Button
-        android:id="@+id/ok_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="@string/ok"
-        android:textAllCaps="true"
-        android:onClick="onOkClicked"/>
-
-    <TextView
-        android:id="@+id/ocean"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:textSize="20sp"
-        android:lineSpacingMultiplier="0.55" />
 
 </LinearLayout>

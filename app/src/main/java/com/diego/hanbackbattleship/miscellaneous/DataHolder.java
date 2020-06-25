@@ -1,4 +1,4 @@
-package com.diego.hanbackbattleship.model;
+package com.diego.hanbackbattleship.miscellaneous;
 
 import java.util.HashMap;
 import java.util.Map;
