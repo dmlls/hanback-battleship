@@ -5,6 +5,7 @@ import com.diego.hanbackbattleship.model.OceanCell;
 import com.diego.hanbackbattleship.model.Orientation;
 import com.diego.hanbackbattleship.model.ScoreValues;
 import com.diego.hanbackbattleship.model.Ship;
+import com.diego.hanbackbattleship.model.ShipState;
 import com.diego.hanbackbattleship.model.ShipType;
 
 import java.util.ArrayList;
@@ -29,7 +30,11 @@ public class Player {
     }
 
     public boolean addShip(ShipType shipType, int coorX, int coorY, Orientation orientation) { // true if ship could be added, false otherwise
-        Ship ship = new Ship(shipType);
+        Ship ship = ocean.getShip(shipType);
+        if (ship != null) { // check if the ship has already been added
+            ocean.removeShip(ship); // remove it and add it again (i.e. change its position on the board)
+        } else
+        ship = new Ship(shipType);
         List<OceanCell> cells = new ArrayList<>();
         int shipSize = shipType.getSize();
         if (orientation.equals(Orientation.HORIZONTAL)) {
@@ -50,11 +55,7 @@ public class Player {
         if (!Collections.disjoint(ocean.getOccupiedCells(), cells)) { // if they have cells in common
             return false;
         }
-        for (OceanCell cell : cells) {
-            cell.setShip(ship);
-            ship.addCell(cell);
-        }
-        ocean.addShip(ship);
+        ocean.addShip(ship, cells);
         return true;
     }
 
@@ -62,24 +63,33 @@ public class Player {
         ocean.removeShip(ship);
     }
 
-    public void launchMissile(int coorX, int coorY) {
+    public ShipState launchMissile(int coorX, int coorY) {
+        ShipState state = ShipState.NO_SHIP;
         OceanCell opponentCell = opponent.getOcean().getCell(coorX, coorY);
-        if (!opponentCell.wasVisited()) {
-            opponentCell.setVisited(true);
-            Ship opponentShip = opponentCell.getShip();
-            if (opponentShip != null) {
-                opponentShip.hit(opponentCell);
-                if (opponentShip.isSunken()) {
-                    previouslySunkOpponent = true;
-                } else {
-                    previouslyHitOpponent = true;
-                }
-            } else {
-                previouslySunkOpponent = false;
-                previouslyHitOpponent = false;
-            }
-            updateScore(opponentShip);
+        if (opponentCell.wasVisited()) {
+            return null;
         }
+        opponentCell.setVisited(true);
+        Ship opponentShip = opponentCell.getShip();
+        if (opponentShip != null) {
+            opponentShip.hit(opponentCell);
+            if (opponentShip.isSunken()) {
+                previouslySunkOpponent = true;
+                state = ShipState.SUNKEN;
+            } else {
+                previouslyHitOpponent = true;
+                state = ShipState.HIT;
+            }
+        } else {
+            previouslySunkOpponent = false;
+            previouslyHitOpponent = false;
+        }
+        updateScore(opponentShip);
+        return state;
+    }
+
+    public ShipState launchMissile(OceanCell cell) {
+        return launchMissile(cell.getCoordinates()[0], cell.getCoordinates()[1]);
     }
 
     private void updateScore(Ship opponentShip) {

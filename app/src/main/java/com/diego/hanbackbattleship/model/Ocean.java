@@ -29,14 +29,36 @@ public class Ocean {
         this.cells = cells;
     }
 
-    public void addShip(Ship ship) {
-        ships.add(ship);
-        occupiedCells.addAll(ship.getCells());
+    public void addShip(Ship ship, List<OceanCell> cells) {
+        this.ships.add(ship);
+        ship.setCells(cells);
+        for (OceanCell cell : cells) {
+            this.cells[cell.getCoordinates()[0]][cell.getCoordinates()[1]].setShip(ship);
+        }
+        occupiedCells.addAll(cells);
     }
 
     public void removeShip(Ship ship) {
-        ships.remove(ship);
-        occupiedCells.removeAll(ship.getCells());
+        List<OceanCell> shipCells = ship.getCells();
+        this.ships.remove(ship);
+        occupiedCells.removeAll(shipCells);
+        ship.setCells(null);
+        for (OceanCell cell : shipCells) {
+            this.cells[cell.getCoordinates()[0]][cell.getCoordinates()[1]].removeShip();
+        }
+    }
+
+    public Ship getShip(int coorX, int coorY) {
+        return cells[coorX][coorX].getShip();
+    }
+
+    public Ship getShip(ShipType shipType) {
+        for (Ship ship : ships) {
+            if (ship.getType().equals(shipType)) {
+                return ship;
+            }
+        }
+        return null;
     }
 
     public List<Ship> getShips() {
@@ -59,11 +81,20 @@ public class Ocean {
         return cells;
     }
 
+    public List<OceanCell> getAllCellsAsList() {
+        List<OceanCell> cellsList = new ArrayList<>();
+        for (int x = 0; x < HEIGHT; x++) {
+            cellsList.addAll(Arrays.asList(cells[x]));
+        }
+        return cellsList;
+    }
+
     public List<OceanCell> getOccupiedCells() {
         return occupiedCells;
     }
 
     public boolean isThereShipInCoords(int coorX, int coorY) {
+        System.out.println(cells[coorX][coorY].getShip());
         return cells[coorX][coorY].getShip() != null;
     }
 
@@ -86,7 +117,7 @@ public class Ocean {
                         ocean.append("□");
                         break;
                     case HIT:
-                        ocean.append("◪");
+                        ocean.append("▣");
                         break;
                     case SUNKEN:
                         ocean.append("■");

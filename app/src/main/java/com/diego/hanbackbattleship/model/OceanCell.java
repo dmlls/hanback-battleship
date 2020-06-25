@@ -1,8 +1,5 @@
 package com.diego.hanbackbattleship.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 public class OceanCell {
     private int[] coordinates;
     private Ship ship;
@@ -33,6 +30,12 @@ public class OceanCell {
     public void setShip(Ship ship) {
         this.ship = ship;
         setShipStateInCell(ShipState.UNHARMED);
+    }
+
+    public void removeShip() {
+        ship = null;
+        shipStateInCell = ShipState.NO_SHIP;
+        visited = false;
     }
 
     public void setShipStateInCell(ShipState state) {

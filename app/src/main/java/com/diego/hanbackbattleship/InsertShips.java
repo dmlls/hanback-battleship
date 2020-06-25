@@ -4,17 +4,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.diego.hanbackbattleship.control.Player;
-import com.diego.hanbackbattleship.model.DataHolder;
-import com.diego.hanbackbattleship.model.Ocean;
+import com.diego.hanbackbattleship.miscellaneous.DataHolder;
+import com.diego.hanbackbattleship.miscellaneous.KeyToCoordinateTranslator;
+import com.diego.hanbackbattleship.miscellaneous.KeypadQuarter;
 import com.diego.hanbackbattleship.model.Orientation;
 import com.diego.hanbackbattleship.model.ShipType;
 
@@ -23,8 +24,10 @@ public class InsertShips extends AppCompatActivity implements AdapterView.OnItem
     private ShipType[] shipTypes;
     private int shipCounter;
     private Orientation orientation = Orientation.HORIZONTAL;
+    private KeypadQuarter quarter = KeypadQuarter.UPPER_LEFT;
 
     private TextView shipName;
+    private Button okButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,48 +45,57 @@ public class InsertShips extends AppCompatActivity implements AdapterView.OnItem
         shipName = findViewById(R.id.ship_type);
         shipName.setText(shipTypes[shipCounter].toString());
 
+        okButton = findViewById(R.id.ok_button);
+
+        Spinner quarterSpinner = findViewById(R.id.quarter);
+        quarterSpinner.setOnItemSelectedListener(this);
+
+        ArrayAdapter<CharSequence> adapterQuarter = ArrayAdapter.createFromResource(this,
+                R.array.quarter, android.R.layout.simple_spinner_item);
+        adapterQuarter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        quarterSpinner.setAdapter(adapterQuarter);
+
         Spinner orientationSpinner = findViewById(R.id.orientation);
         orientationSpinner.setOnItemSelectedListener(this);
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+        ArrayAdapter<CharSequence> adapterOrientation = ArrayAdapter.createFromResource(this,
                 R.array.orientation, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        orientationSpinner.setAdapter(adapter);
+        adapterOrientation.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        orientationSpinner.setAdapter(adapterOrientation);
+
+        displayShips();
     }
 
     public void onOkClicked(View view) {
-        EditText coordinateX = (EditText) findViewById(R.id.coordinate_x);
-        EditText coordinateY = (EditText) findViewById(R.id.coordinate_y);
-        TextView alert = (TextView) findViewById(R.id.already_boat_alert);
-
-        int coorX = Integer.parseInt(coordinateX.getText().toString());
-        int coorY = Integer.parseInt(coordinateY.getText().toString());
-
-        if (player.getOcean().isThereShipInCoords(coorX, coorY) && shipCounter != ShipType.values().length) {
-            alert.setVisibility(View.VISIBLE);
+        shipCounter++;
+        if (shipCounter < ShipType.values().length ) {
+            shipName.setText(shipTypes[shipCounter].toString());
+            okButton.setEnabled(false);
+            displayShips();
         } else {
-            alert.setVisibility(View.GONE);
-            if (shipCounter < ShipType.values().length) {
-                Button okButton = (Button) findViewById(R.id.ok_button);
-
-                player.addShip(shipTypes[shipCounter], coorX, coorY, orientation);
-                shipCounter++;
-                if (shipCounter < ShipType.values().length) {
-                    coordinateX.getText().clear();
-                    coordinateY.getText().clear();
-                    coordinateX.requestFocus();
-                    shipName.setText(shipTypes[shipCounter].toString());
-                } else if (shipCounter == ShipType.values().length) {
-                    okButton.setText(R.string.next);
-                }
-                displayShips();
-            } else {
-                Intent intent = new Intent(this, BattleActivity.class);
-                DataHolder.getInstance().save(BattleActivity.ID_OCEAN, player.getOcean());
-                DataHolder.getInstance().save(BattleActivity.ID_OPPONENT, player.getOpponent());
-                startActivity(intent);
-            }
+            Intent intent = new Intent(this, BattleActivity.class);
+            DataHolder.getInstance().save(BattleActivity.ID_OCEAN, player.getOcean());
+            DataHolder.getInstance().save(BattleActivity.ID_OPPONENT, player.getOpponent());
+            startActivity(intent);
         }
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        int[] coords = KeyToCoordinateTranslator.translate(keyCode, quarter);
+        TextView alert = findViewById(R.id.already_boat_alert);
+        boolean shipWasAdded = player.addShip(shipTypes[shipCounter], coords[0], coords[1], orientation);
+        okButton.setEnabled(shipWasAdded);
+        if (shipWasAdded) {
+            alert.setVisibility(View.GONE);
+            displayShips();
+            if (shipCounter == ShipType.values().length - 1) {
+                okButton.setText(R.string.next);
+            }
+        } else {
+            alert.setVisibility(View.VISIBLE);
+        }
+        return true;
     }
 
     private void displayShips() {
@@ -93,11 +105,26 @@ public class InsertShips extends AppCompatActivity implements AdapterView.OnItem
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (position == 0) {
-            orientation = Orientation.HORIZONTAL;
-        } else {
-            orientation = Orientation.VERTICAL;
+        switch (parent.getId()) {
+            case R.id.orientation:
+                if (position == 0) {
+                    orientation = Orientation.HORIZONTAL;
+                } else {
+                    orientation = Orientation.VERTICAL;
+                }
+                break;
+            case R.id.quarter:
+                if (position == 0) {
+                    quarter = KeypadQuarter.UPPER_LEFT;
+                } else if (position == 1) {
+                    quarter = KeypadQuarter.UPPER_RIGHT;
+                } else if (position == 2) {
+                    quarter = KeypadQuarter.LOWER_LEFT;
+                } else {
+                    quarter = KeypadQuarter.LOWER_RIGHT;
+                }
         }
+
     }
 
     @Override

@@ -8,16 +8,22 @@
     <string name="your_turn">Your turn</string>
     <string name="opponents_turn">Opponent\'s turn</string>
     <string name="launch">Launch missile</string>
-    <string name="legend">Legend:</string>
-    <string name="water">▩ water</string>
-    <string name="hit">◪ ship hit</string>
-    <string name="sunken">■ ship sunk</string>
+    <string name="water">WATER!</string>
+    <string name="hit">SHIP HIT!</string>
+    <string name="sunken">SHIP SUNK!</string>
     <string-array name="orientation">
         <item>Horizontal</item>
         <item>Vertical</item>
     </string-array>
+    <string-array name="quarter">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
     <string name="you_won">YOU WON!</string>
     <string name="game_over">GAME OVER</string>
     <string name="play_again">play again</string>
-    <string name="already_boat_alert">There\'s already a boat there.</string>
+    <string name="already_boat_alert">There\'s already a ship there.</string>
+    <string name="already_hit_alert">You already hit that position.</string>
 </resources>

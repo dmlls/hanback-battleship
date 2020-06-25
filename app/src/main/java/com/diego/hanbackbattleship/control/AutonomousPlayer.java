@@ -1,41 +1,46 @@
 package com.diego.hanbackbattleship.control;
 
-import android.util.Log;
-
 import com.diego.hanbackbattleship.model.Ocean;
 import com.diego.hanbackbattleship.model.OceanCell;
 import com.diego.hanbackbattleship.model.Orientation;
-import com.diego.hanbackbattleship.model.Ship;
+import com.diego.hanbackbattleship.model.ShipState;
 import com.diego.hanbackbattleship.model.ShipType;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 public class AutonomousPlayer extends Player {
 
     private Random random = new Random();
 
+    private List<OceanCell> notVisitedCells = new ArrayList<>();
+
     public AutonomousPlayer() {
         super();
         int[] coords;
         boolean shipCanBeAdded;
         for (ShipType shipType : getShipTypes()) {
-            Orientation orientation = getRandomOrientation();
             do {
                 coords = getRandomCoordinates();
                 shipCanBeAdded = addShip(shipType, coords[0], coords[1], getRandomOrientation());
             } while (!shipCanBeAdded);
         }
+        notVisitedCells = super.getOcean().getAllCellsAsList();
     }
 
     public AutonomousPlayer(Ocean ocean, Player opponent, int score) {
         super(ocean, opponent, score);
     }
 
-    public void launchMissile() {
-        int[] coords = getRandomCoordinates();
-        super.launchMissile(coords[0], coords[1]);
+    public ShipState launchMissile() {
+        OceanCell cell = getRandomNotVisitedCell();
+        return super.launchMissile(cell);
+    }
+
+    private OceanCell getRandomNotVisitedCell() {
+        return notVisitedCells.remove(random.nextInt(notVisitedCells.size()));
     }
 
     private int[] getRandomCoordinates() {
