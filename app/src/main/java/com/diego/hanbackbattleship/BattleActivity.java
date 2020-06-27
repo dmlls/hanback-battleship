@@ -28,6 +28,10 @@ public class BattleActivity extends AppCompatActivity implements AdapterView.OnI
     public static final String ID_OCEAN = "ocean";
     public static final String ID_OPPONENT = "opponent";
 
+    private native int SegmentControl(int score);
+
+    //  private ScoreThread scoreThread = new ScoreThread();
+
     private Player player;
     private AutonomousPlayer opponent;
 
@@ -45,10 +49,14 @@ public class BattleActivity extends AppCompatActivity implements AdapterView.OnI
     private Spinner quarterSpinner;
     private TextView alert;
 
+  //  private boolean stopThread;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_battle);
+
+        System.loadLibrary("7segment");
 
         player = new Player((Ocean) DataHolder.getInstance().retrieve(ID_OCEAN),
                                 (Player) DataHolder.getInstance().retrieve(ID_OPPONENT), 0);
@@ -56,6 +64,9 @@ public class BattleActivity extends AppCompatActivity implements AdapterView.OnI
 
         player.setOpponent(opponent);
         opponent.setOpponent(player);
+/*
+        scoreThread.setDaemon(true);
+        scoreThread.start();*/
 
         turn = findViewById(R.id.turn);
         ocean = findViewById(R.id.ocean);
@@ -102,8 +113,8 @@ public class BattleActivity extends AppCompatActivity implements AdapterView.OnI
     }
 
     @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (!keyAlreadyPressed) {
+    public boolean onKeyUp(int keyCode, KeyEvent event) { // TODO: unable when opponent's turn
+        if (!keyAlreadyPressed && getPlayerTurn().equals(player)) {
             int[] coords = KeyToCoordinateTranslator.translate(keyCode, quarter);
             ShipState result = player.launchMissile(coords[0], coords[1]);
             if (result == null) {
@@ -112,6 +123,7 @@ public class BattleActivity extends AppCompatActivity implements AdapterView.OnI
                 return false;
             } else {
                 setResultText(result);
+                System.out.println(player.getScore());
                 launchMissileText.setVisibility(GONE);
                 alert.setVisibility(GONE);
                 quarterSpinner.setVisibility(GONE);
@@ -186,4 +198,12 @@ public class BattleActivity extends AppCompatActivity implements AdapterView.OnI
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {}
+/*
+    private class ScoreThread extends Thread {
+        public void run() {
+            while(!stopThread) {
+                SegmentControl(getPlayerTurn().getScore());
+            }
+        }
+    }*/
 }

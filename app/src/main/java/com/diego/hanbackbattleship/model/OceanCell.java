@@ -4,6 +4,7 @@ public class OceanCell {
     private int[] coordinates;
     private Ship ship;
     private ShipState shipStateInCell;
+    private int shipSlice; // used to print the ship
     private boolean visited;
 
     public OceanCell(int[] coordinates) {
@@ -19,6 +20,10 @@ public class OceanCell {
         return ship;
     }
 
+    public int getShipSlice() {
+        return shipSlice;
+    }
+
     public ShipState getShipStateInCell() {
         return shipStateInCell;
     }
@@ -27,8 +32,9 @@ public class OceanCell {
         return visited;
     }
 
-    public void setShip(Ship ship) {
+    public void setShip(Ship ship, int shipSlice) {
         this.ship = ship;
+        this.shipSlice = shipSlice;
         setShipStateInCell(ShipState.UNHARMED);
     }
 

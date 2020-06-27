@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">Hanback Battleship</string>
-    <string name="introduce_coordinates">Introduce coordinates for ship</string>
+    <string name="place_ship">Place ship</string>
     <string name="coordinateX">Coordinate X</string>
     <string name="coordinateY">Coordinate Y</string>
     <string name="ok">Ok</string>
+    <string name="rotate">Rotate</string>
     <string name="next">Next</string>
     <string name="your_turn">Your turn</string>
     <string name="opponents_turn">Opponent\'s turn</string>
