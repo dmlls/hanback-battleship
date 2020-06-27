@@ -8,12 +8,14 @@ import java.util.List;
 
 public class Ship {
     private final ShipType type;
+    private final Orientation orientation;
     private List<OceanCell> cells = new ArrayList<>();
     private boolean sunken;
     private int hits; // number of times the ship was hit
 
-    public Ship(ShipType type) {
+    public Ship(ShipType type, Orientation orientation) {
         this.type = type;
+        this.orientation = orientation;
     }
 
     public void hit(OceanCell cell) {
@@ -29,6 +31,10 @@ public class Ship {
 
     public ShipType getType() {
         return type;
+    }
+
+    public Orientation getOrientation() {
+        return orientation;
     }
 
     public List<OceanCell> getCells() {
@@ -49,6 +55,27 @@ public class Ship {
 
     public void setCells(List<OceanCell> cells) {
         this.cells = cells;
+    }
+
+    public void setHits(int hits) {
+        this.hits = hits;
+    }
+
+    public void setSunken(boolean sunken) {
+        this.sunken = sunken;
+    }
+
+    public Ship copy() {
+        Ship shipCopy = new Ship(this.type, this.orientation);
+        shipCopy.setHits(this.hits);
+        shipCopy.setSunken(this.sunken);
+        for (OceanCell cell : cells) {
+            shipCopy.addCell(new OceanCell(cell.getCoordinates()));
+        }
+        for (OceanCell shipCells : shipCopy.getCells()) {
+            shipCells.setShip(shipCopy, shipCells.getShipSlice());
+        }
+        return shipCopy;
     }
 
     @Override

@@ -29,12 +29,16 @@ public class Player {
         this.score = score;
     }
 
-    public boolean addShip(ShipType shipType, int coorX, int coorY, Orientation orientation) { // true if ship could be added, false otherwise
+    public boolean addShip(ShipType shipType, int coorX, int coorY, Orientation orientation) {
+        return addShip(ocean, shipType, coorX, coorY, orientation);
+    }
+
+    private boolean addShip(Ocean ocean, ShipType shipType, int coorX, int coorY, Orientation orientation) { // true if ship could be added, false otherwise
         Ship ship = ocean.getShip(shipType);
         if (ship != null) { // check if the ship has already been added
             ocean.removeShip(ship); // remove it and add it again (i.e. change its position on the board)
-        } else
-        ship = new Ship(shipType);
+        }
+        ship = new Ship(shipType, orientation);
         List<OceanCell> cells = new ArrayList<>();
         int shipSize = shipType.getSize();
         if (orientation.equals(Orientation.HORIZONTAL)) {
@@ -59,8 +63,20 @@ public class Player {
         return true;
     }
 
-    public void removeShip(Ship ship) {
-        ocean.removeShip(ship);
+    public boolean canShipBeAdded(ShipType shipType, int coorX, int coorY, Orientation orientation) {
+        Ocean oceanCopy = ocean.copy();
+        System.out.println(oceanCopy.printOcean());
+        System.out.println(".....");
+        return addShip(oceanCopy, shipType, coorX, coorY, orientation);
+    }
+
+    public void removeShip(ShipType shipType) {
+        for (Ship ship : ocean.getShips()) {
+            if (ship.getType().equals(shipType)) {
+                ocean.removeShip(ship);
+            }
+        }
+
     }
 
     public ShipState launchMissile(int coorX, int coorY) {

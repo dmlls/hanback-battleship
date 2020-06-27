@@ -16,7 +16,9 @@ import com.diego.hanbackbattleship.control.Player;
 import com.diego.hanbackbattleship.miscellaneous.DataHolder;
 import com.diego.hanbackbattleship.miscellaneous.KeyToCoordinateTranslator;
 import com.diego.hanbackbattleship.miscellaneous.KeypadQuarter;
+import com.diego.hanbackbattleship.miscellaneous.OceanPrinter;
 import com.diego.hanbackbattleship.model.Orientation;
+import com.diego.hanbackbattleship.model.Ship;
 import com.diego.hanbackbattleship.model.ShipType;
 
 public class InsertShips extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -26,26 +28,34 @@ public class InsertShips extends AppCompatActivity implements AdapterView.OnItem
     private Orientation orientation = Orientation.HORIZONTAL;
     private KeypadQuarter quarter = KeypadQuarter.UPPER_LEFT;
 
+    private OceanPrinter playerOceanPrinter;
+
     private TextView shipName;
     private Button okButton;
+    private Button rotateButton;
+
+    private int[] lastCoordsInput;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_insert_ships);
+
         player = new Player();
         Player opponent = new Player();
 
         player.setOpponent(opponent);
         opponent.setOpponent(player);
 
-        shipTypes = player.getShipTypes();
+        playerOceanPrinter = new OceanPrinter(this, player.getOcean());
 
-        setContentView(R.layout.activity_insert_ships);
+        shipTypes = player.getShipTypes();
 
         shipName = findViewById(R.id.ship_type);
         shipName.setText(shipTypes[shipCounter].toString());
 
         okButton = findViewById(R.id.ok_button);
+        rotateButton = findViewById(R.id.rotate_button);
 
         Spinner quarterSpinner = findViewById(R.id.quarter);
         quarterSpinner.setOnItemSelectedListener(this);
@@ -55,15 +65,7 @@ public class InsertShips extends AppCompatActivity implements AdapterView.OnItem
         adapterQuarter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         quarterSpinner.setAdapter(adapterQuarter);
 
-        Spinner orientationSpinner = findViewById(R.id.orientation);
-        orientationSpinner.setOnItemSelectedListener(this);
-
-        ArrayAdapter<CharSequence> adapterOrientation = ArrayAdapter.createFromResource(this,
-                R.array.orientation, android.R.layout.simple_spinner_item);
-        adapterOrientation.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        orientationSpinner.setAdapter(adapterOrientation);
-
-        displayShips();
+        playerOceanPrinter.printOcean();
     }
 
     public void onOkClicked(View view) {
@@ -71,7 +73,9 @@ public class InsertShips extends AppCompatActivity implements AdapterView.OnItem
         if (shipCounter < ShipType.values().length ) {
             shipName.setText(shipTypes[shipCounter].toString());
             okButton.setEnabled(false);
-            displayShips();
+            rotateButton.setEnabled(false);
+            orientation = Orientation.HORIZONTAL;
+            playerOceanPrinter.printOcean(shipTypes[shipCounter]);
         } else {
             Intent intent = new Intent(this, BattleActivity.class);
             DataHolder.getInstance().save(BattleActivity.ID_OCEAN, player.getOcean());
@@ -80,27 +84,47 @@ public class InsertShips extends AppCompatActivity implements AdapterView.OnItem
         }
     }
 
+    public void onRotateClicked(View view) {
+        orientation = getOppositeOrientation(orientation);
+        addShip(lastCoordsInput, orientation);
+    }
+
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         int[] coords = KeyToCoordinateTranslator.translate(keyCode, quarter);
+        rotateButton.setEnabled(canShipBeRotated(coords));
+        lastCoordsInput = coords;
+        addShip(coords, orientation);
+        return true;
+    }
+
+    private boolean canShipBeRotated(int[] coords) {
+        boolean wasShipAdded = player.addShip(shipTypes[shipCounter], coords[0], coords[1], getOppositeOrientation(orientation));
+        if (wasShipAdded) {
+            player.removeShip(shipTypes[shipCounter]);
+            return true;
+        }
+        return false;
+    }
+
+    private Orientation getOppositeOrientation(Orientation orientation) {
+        return orientation.equals(Orientation.HORIZONTAL) ? Orientation.VERTICAL : Orientation.HORIZONTAL;
+    }
+
+    public void addShip(int[] coords, Orientation orientation) {
         TextView alert = findViewById(R.id.already_boat_alert);
         boolean shipWasAdded = player.addShip(shipTypes[shipCounter], coords[0], coords[1], orientation);
         okButton.setEnabled(shipWasAdded);
         if (shipWasAdded) {
             alert.setVisibility(View.GONE);
-            displayShips();
+            playerOceanPrinter.printOcean(shipTypes[shipCounter]);
             if (shipCounter == ShipType.values().length - 1) {
                 okButton.setText(R.string.next);
             }
         } else {
+            playerOceanPrinter.moveShipToIllegalCoords(shipTypes[shipCounter], coords, orientation);
             alert.setVisibility(View.VISIBLE);
         }
-        return true;
-    }
-
-    private void displayShips() {
-        TextView ocean = findViewById(R.id.ocean);
-        ocean.setText(player.printOcean());
     }
 
     @Override

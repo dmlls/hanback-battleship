@@ -1,64 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
-    android:padding="30dp"
-    android:orientation="vertical"
-    tools:context=".InsertShips">
+    tools:context=".InsertShips"
+    android:id="@+id/frame_layout">
 
-    <TextView
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp" >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/place_ship"
+            android:textSize="15sp"
+            android:layout_marginTop="15dp" />
+
+        <TextView
+            android:id="@+id/ship_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="25sp"
+            android:layout_marginTop="10dp"/>
+
+        <Spinner
+            android:id="@+id/quarter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp" />
+
+        <LinearLayout
+            android:id="@+id/ocean"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp" >
+            <Button
+                android:id="@+id/rotate_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rotate"
+                android:textAllCaps="true"
+                android:enabled="false"
+                android:onClick="onRotateClicked"
+                android:layout_marginRight="20dp"
+                android:layout_marginEnd="20dp"/>
+            <Button
+                android:id="@+id/ok_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ok"
+                android:textAllCaps="true"
+                android:enabled="false"
+                android:onClick="onOkClicked"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/already_boat_alert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/already_boat_alert"
+            android:textColor="@color/red"
+            android:layout_marginTop="5dp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/battleship"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/introduce_coordinates"
-        android:textSize="15sp"
-        android:layout_marginTop="10dp" />
+        android:orientation="horizontal" />
 
-    <TextView
-        android:id="@+id/ship_type"
+    <LinearLayout
+        android:id="@+id/carrier"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
-        android:layout_marginTop="20dp"/>
+        android:orientation="horizontal" />
 
-    <Spinner
-        android:id="@+id/orientation"
+    <LinearLayout
+        android:id="@+id/cruiser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp" />
+        android:orientation="horizontal" />
 
-    <Spinner
-        android:id="@+id/quarter"
+    <LinearLayout
+        android:id="@+id/submarine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp" />
+        android:orientation="horizontal" />
 
-    <TextView
-        android:id="@+id/ocean"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:textSize="20sp"
-        android:lineSpacingMultiplier="0.9" />
-
-    <Button
-        android:id="@+id/ok_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/ok"
-        android:textAllCaps="true"
-        android:enabled="false"
-        android:onClick="onOkClicked"/>
-
-    <TextView
-        android:id="@+id/already_boat_alert"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/already_boat_alert"
-        android:textColor="@color/red"
-        android:layout_marginTop="5dp"
-        android:visibility="gone" />
-
-</LinearLayout>
+</FrameLayout>

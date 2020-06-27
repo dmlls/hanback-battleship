@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class Ocean {
@@ -25,15 +26,12 @@ public class Ocean {
         }
     }
 
-    public Ocean(OceanCell[][] cells) {
-        this.cells = cells;
-    }
-
     public void addShip(Ship ship, List<OceanCell> cells) {
         this.ships.add(ship);
         ship.setCells(cells);
-        for (OceanCell cell : cells) {
-            this.cells[cell.getCoordinates()[0]][cell.getCoordinates()[1]].setShip(ship);
+        for (int i = 0; i < cells.size(); i++) {
+            OceanCell cell = cells.get(i);
+            this.cells[cell.getCoordinates()[0]][cell.getCoordinates()[1]].setShip(ship, i);
         }
         occupiedCells.addAll(cells);
     }
@@ -94,8 +92,32 @@ public class Ocean {
     }
 
     public boolean isThereShipInCoords(int coorX, int coorY) {
-        System.out.println(cells[coorX][coorY].getShip());
         return cells[coorX][coorY].getShip() != null;
+    }
+
+    public void setCell(int x, int y, OceanCell cell) {
+        this.cells[x][y] = cell;
+    }
+
+    public void addOccupiedCell(OceanCell oceanCell) {
+        this.occupiedCells.add(oceanCell);
+    }
+
+    public Ocean copy() {
+        Ocean oceanCopy = new Ocean();
+        for (int x = 0; x < HEIGHT; x++) {
+            for (int y = 0; y < WIDTH; y++) {
+                oceanCopy.setCell(x, y, this.cells[x][y]);
+                if (this.occupiedCells.contains(this.cells[x][y])) {
+                    oceanCopy.addOccupiedCell(oceanCopy.getAllCells()[x][y]);
+                }
+            }
+        }
+        for (Ship ship : this.ships) {
+            Ship shipCopy = ship.copy();
+            oceanCopy.addShip(shipCopy, shipCopy.getCells());
+        }
+        return oceanCopy;
     }
 
     public String printOcean() {
