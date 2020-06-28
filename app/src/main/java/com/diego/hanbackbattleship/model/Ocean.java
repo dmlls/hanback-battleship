@@ -47,7 +47,7 @@ public class Ocean {
     }
 
     public Ship getShip(int coorX, int coorY) {
-        return cells[coorX][coorX].getShip();
+        return cells[coorX][coorY].getShip();
     }
 
     public Ship getShip(ShipType shipType) {

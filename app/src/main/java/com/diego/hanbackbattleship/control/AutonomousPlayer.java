@@ -14,8 +14,8 @@ import java.util.Random;
 public class AutonomousPlayer extends Player {
 
     private Random random = new Random();
-
     private List<OceanCell> notVisitedCells = new ArrayList<>();
+    private int[] lastShotCoordinates;
 
     public AutonomousPlayer() {
         super();
@@ -28,15 +28,22 @@ public class AutonomousPlayer extends Player {
             } while (!shipCanBeAdded);
         }
         notVisitedCells = super.getOcean().getAllCellsAsList();
+        lastShotCoordinates = new int[2];
     }
 
     public AutonomousPlayer(Ocean ocean, Player opponent, int score) {
         super(ocean, opponent, score);
+        lastShotCoordinates = new int[2];
     }
 
     public ShipState launchMissile() {
         OceanCell cell = getRandomNotVisitedCell();
+        lastShotCoordinates = cell.getCoordinates();
         return super.launchMissile(cell);
+    }
+
+    public int[] getLastShotCoordinates() {
+        return lastShotCoordinates;
     }
 
     private OceanCell getRandomNotVisitedCell() {
