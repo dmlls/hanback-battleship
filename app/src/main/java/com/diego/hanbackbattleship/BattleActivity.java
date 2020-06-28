@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -42,6 +43,8 @@ public class BattleActivity extends AppCompatActivity implements View.OnClickLis
 
     private boolean playerTurn = true; // true if it's player's turn, false if it's opponent's
 
+    private Handler handler;
+
     private TextView turn;
     private TextView launchMissileText;
     private TextView resultText;
@@ -69,6 +72,8 @@ public class BattleActivity extends AppCompatActivity implements View.OnClickLis
 /*
         scoreThread.setDaemon(true);
         scoreThread.start();*/
+
+        handler = new Handler();
 
         turn = findViewById(R.id.turn);
         nextButton = findViewById(R.id.next_button);
@@ -106,17 +111,29 @@ public class BattleActivity extends AppCompatActivity implements View.OnClickLis
         } else {
             changeTurn();
             if (getPlayerTurn().equals(opponent)) {
+                opponentOceanPrinter.playChangeTurnAnimation(playerOceanPrinter, true);
                 turn.setText(R.string.opponents_turn);
-                launchMissileText.setVisibility(GONE);
-                ShipState result = opponent.launchMissile();
-                setResultText(result);
-                playerOceanPrinter.printOceanVisitedWithShips();
+                updateUIBeforeShooting();
+                final ShipState result = opponent.launchMissile();
+                final int[] coords = opponent.getLastShotCoordinates();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        playerOceanPrinter.playShootingAnimation(coords, result, true);
+                    }
+                }, OceanPrinter.CHANGE_TURN_ANIMATION_DURATION);
+
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateUIAfterShooting(result);
+                    }
+                }, OceanPrinter.SHOOTING_ANIMATION_DURATION);
                 opponentOceanPrinter.fadeOutQuarterFocus();
             } else {
+                playerOceanPrinter.playChangeTurnAnimation(opponentOceanPrinter, false);
                 turn.setText(R.string.your_turn);
-                resultText.setVisibility(GONE);
-                nextButton.setVisibility(GONE);
-                launchMissileText.setVisibility(VISIBLE);
+                updateUIBeforeShooting();
                 opponentOceanPrinter.printOceanVisited();
                 opponentOceanPrinter.fadeInQuarterFocus();
             }
@@ -128,27 +145,44 @@ public class BattleActivity extends AppCompatActivity implements View.OnClickLis
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (!keyAlreadyPressed && getPlayerTurn().equals(player)) {
             int[] coords = KeyToCoordinateTranslator.translate(keyCode, currentQuarter);
-            ShipState result = player.launchMissile(coords[0], coords[1]);
-            if (result == null) {
+            final ShipState result = player.launchMissile(coords[0], coords[1]);
+            if (result == null) { // position already hit
                 nextButton.setEnabled(false);
                 alert.setVisibility(VISIBLE);
                 return false;
             } else {
-                setResultText(result);
-                System.out.println(player.getScore());
-                launchMissileText.setVisibility(GONE);
-                alert.setVisibility(GONE);
-                resultText.setVisibility(VISIBLE);
-                nextButton.setEnabled(true);
-                nextButton.setFocusable(false);
-                nextButton.setVisibility(VISIBLE);
-                keyAlreadyPressed = true;
-                opponentOceanPrinter.printOceanVisited();
+                opponentOceanPrinter.playShootingAnimation(coords, result, false);
                 opponentOceanPrinter.fadeOutQuarterFocus();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateUIAfterShooting(result);
+                    }
+                }, OceanPrinter.SHOOTING_ANIMATION_DURATION);
+                System.out.println(player.getScore());
+                keyAlreadyPressed = true;
                 return true;
             }
         }
         return false;
+    }
+
+    private void updateUIBeforeShooting() {
+        launchMissileText.setVisibility(VISIBLE);
+        resultText.setVisibility(GONE);
+        nextButton.setVisibility(GONE);
+    }
+
+    private void updateUIAfterShooting(ShipState result) {
+        setResultText(result);
+        launchMissileText.setVisibility(GONE);
+        alert.setVisibility(GONE);
+        resultText.setVisibility(VISIBLE);
+        nextButton.setEnabled(true);
+        nextButton.setFocusable(false);
+        nextButton.setAlpha(0f);
+        nextButton.setVisibility(VISIBLE);
+        nextButton.animate().alpha(1f);
     }
 
     private void setResultText(ShipState result) {
