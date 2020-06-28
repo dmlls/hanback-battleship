@@ -15,11 +15,15 @@ import android.widget.LinearLayout;
 import com.diego.hanbackbattleship.R;
 import com.diego.hanbackbattleship.control.Player;
 import com.diego.hanbackbattleship.model.Ocean;
+import com.diego.hanbackbattleship.model.OceanCell;
 import com.diego.hanbackbattleship.model.Orientation;
 import com.diego.hanbackbattleship.model.Ship;
 import com.diego.hanbackbattleship.model.ShipType;
 
+import java.io.IOException;
 import java.util.HashMap;
+
+import pl.droidsonroids.gif.GifDrawable;
 
 public class OceanPrinter {
 
@@ -41,19 +45,31 @@ public class OceanPrinter {
 
     private int sizeOfCell;
 
-    private ImageView[][] ivCells;
+    private View quarterFocus;
+
+    private ImageView[][] ivBaseCells;
+    private ImageView[][] ivTopCells;
     private ImageView[] ivBattleship;
     private ImageView[] ivCarrier;
     private ImageView[] ivCruiser;
     private ImageView[] ivSubmarine;
 
     private Drawable[] battleship = new Drawable[4];
+    private Drawable[] battleshipSunken = new Drawable[4];
     private Drawable[] carrier = new Drawable[5];
+    private Drawable[] carrierSunken = new Drawable[5];
     private Drawable[] cruiser = new Drawable[3];
+    private Drawable[] cruiserSunken = new Drawable[3];
     private Drawable[] submarine = new Drawable[3];
+    private Drawable[] submarineSunken = new Drawable[3];
+    private GifDrawable shootHit;
+    private GifDrawable shipSunk;
+    private GifDrawable shootWater;
     private Drawable sea;
+    private Drawable water;
 
-    private LinearLayout oceanLayout;
+    private LinearLayout oceanBaseLayout;
+    private LinearLayout oceanTopLayout;
     private LinearLayout battleshipLayout;
     private LinearLayout carrierLayout;
     private LinearLayout cruiserLayout;
@@ -63,10 +79,15 @@ public class OceanPrinter {
         this.context = context;
         this.ocean = ocean;
         this.oceanSize = Ocean.getHeight();
-        initializeResources();
+        quarterFocus = ((Activity) context).findViewById(R.id.quarter_focus);
+        try {
+            initializeResources();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
-    private void initializeResources() {
+    private void initializeResources() throws IOException {
         battleship[0] = context.getResources().getDrawable(R.drawable.ic_battleship_1);
         battleship[1] = context.getResources().getDrawable(R.drawable.ic_battleship_2);
         battleship[2] = context.getResources().getDrawable(R.drawable.ic_battleship_3);
@@ -86,17 +107,43 @@ public class OceanPrinter {
         submarine[1] = context.getResources().getDrawable(R.drawable.ic_submarine_2);
         submarine[2] = context.getResources().getDrawable(R.drawable.ic_submarine_3);
 
+        battleshipSunken[0] = context.getResources().getDrawable(R.drawable.ic_battleship_sunken_1);
+        battleshipSunken[1] = context.getResources().getDrawable(R.drawable.ic_battleship_sunken_2);
+        battleshipSunken[2] = context.getResources().getDrawable(R.drawable.ic_battleship_sunken_3);
+        battleshipSunken[3] = context.getResources().getDrawable(R.drawable.ic_battleship_sunken_4);
+
+        carrierSunken[0] = context.getResources().getDrawable(R.drawable.ic_carrier_sunken_1);
+        carrierSunken[1] = context.getResources().getDrawable(R.drawable.ic_carrier_sunken_2);
+        carrierSunken[2] = context.getResources().getDrawable(R.drawable.ic_carrier_sunken_3);
+        carrierSunken[3] = context.getResources().getDrawable(R.drawable.ic_carrier_sunken_4);
+        carrierSunken[4] = context.getResources().getDrawable(R.drawable.ic_carrier_sunken_5);
+
+        cruiserSunken[0] = context.getResources().getDrawable(R.drawable.ic_cruiser_sunken_1);
+        cruiserSunken[1] = context.getResources().getDrawable(R.drawable.ic_cruiser_sunken_2);
+        cruiserSunken[2] = context.getResources().getDrawable(R.drawable.ic_cruiser_sunken_3);
+
+        submarineSunken[0] = context.getResources().getDrawable(R.drawable.ic_submarine_sunken_1);
+        submarineSunken[1] = context.getResources().getDrawable(R.drawable.ic_submarine_sunken_2);
+        submarineSunken[2] = context.getResources().getDrawable(R.drawable.ic_submarine_sunken_3);
+
+        shootHit = new GifDrawable(context.getResources(), R.raw.shoot_hit);
+        shipSunk = new GifDrawable(context.getResources(), R.raw.ship_sunk);
+        shootWater = new GifDrawable(context.getResources(), R.raw.shoot_water);
+
         sea = context.getResources().getDrawable(R.drawable.ic_sea);
+        water = context.getResources().getDrawable(R.drawable.ic_water);
 
         sizeOfCell = Math.round((float) context.getResources().getDisplayMetrics().widthPixels / oceanSize) - HORIZONTAL_MARGIN;
 
-        oceanLayout = ((Activity) context).findViewById(R.id.ocean);
+        oceanBaseLayout = ((Activity) context).findViewById(R.id.ocean_base);
+        oceanTopLayout = ((Activity) context).findViewById(R.id.ocean_top);
         battleshipLayout = ((Activity) context).findViewById(R.id.battleship);
         carrierLayout = ((Activity) context).findViewById(R.id.carrier);
         cruiserLayout = ((Activity) context).findViewById(R.id.cruiser);
         submarineLayout = ((Activity) context).findViewById(R.id.submarine);
 
-        ivCells = new ImageView[oceanSize][oceanSize];
+        ivBaseCells = new ImageView[oceanSize][oceanSize];
+        ivTopCells = new ImageView[oceanSize][oceanSize];
         ivBattleship = new ImageView[battleship.length];
         ivCarrier = new ImageView[carrier.length];
         ivCruiser = new ImageView[cruiser.length];
@@ -193,50 +240,160 @@ public class OceanPrinter {
         return null;
     }
 
+    private Drawable[] getShipSunkenDrawables(ShipType shipType) {
+        switch (shipType) {
+            case BATTLESHIP:
+                return battleshipSunken;
+            case CARRIER:
+                return carrierSunken;
+            case CRUISER:
+                return cruiserSunken;
+            case SUBMARINE:
+                return submarineSunken;
+        }
+        return null;
+    }
+
     public void moveShipToIllegalCoords(ShipType shipType, int[] illegalCoords, Orientation orientation) {
         Player player = new Player();
         player.addShip(shipType, illegalCoords[0], illegalCoords[1], orientation);
         Ship ship = player.getOcean().getShip(shipType);
-        displayShip(ship);
+        displayShipWhenAddingShips(ship);
 
         LinearLayout shipLayout = getShipLinearLayout(shipType);
         setColorFilter(shipLayout);
         startShipBlinking(shipLayout);
     }
 
-    public void printOcean(ShipType shipType) {
-        printOcean();
+    public void printOceanWhenAddingShips(ShipType shipType) {
+        printOceanWhenAddingShips();
         if (currentBlinkingShip != null && !currentBlinkingShip.equals(getShipLinearLayout(shipType))) {
             stopShipBlinking(currentBlinkingShip);
         }
         startShipBlinking(getShipLinearLayout(shipType));
     }
 
-    public void printOcean() {
-        if(oceanLayout.getChildCount() > 0) {
-            oceanLayout.removeAllViews();
+    private void clearLayouts() {
+        if (oceanBaseLayout != null && oceanBaseLayout.getChildCount() > 0) {
+            oceanBaseLayout.removeAllViews();
         }
 
+        if (oceanTopLayout != null && oceanTopLayout.getChildCount() > 0) {
+            oceanTopLayout.removeAllViews();
+        }
+    }
+
+    public void printOceanVisitedWithShips() {
         LinearLayout.LayoutParams cellParams = new LinearLayout.LayoutParams(sizeOfCell, sizeOfCell);
         LinearLayout.LayoutParams oceanRowParams = new LinearLayout.LayoutParams(sizeOfCell * oceanSize, sizeOfCell);
+
+        clearLayouts();
+
+        for (int i = 0; i < oceanSize; i++) {
+            LinearLayout linRowBase = new LinearLayout(context);
+            LinearLayout linRowTop = new LinearLayout(context);
+            for (int j = 0; j < oceanSize; j++) {
+                ivBaseCells[i][j] = new ImageView(context);
+                ivTopCells[i][j] = new ImageView(context);
+                OceanCell cell = ocean.getCell(i, j);
+                // Fill the base layout
+                if (cell.getShip() != null) {
+                    int slice = cell.getShipSlice();
+                    ivBaseCells[i][j].setImageDrawable(getShipDrawables(cell.getShip().getType())[slice]);
+                    ivBaseCells[i][j].setAlpha(0.5f);
+                    if (cell.getShip().getOrientation().equals(Orientation.VERTICAL)) {
+                        ivBaseCells[i][j].setRotation(90f);
+                    }
+                } else {
+                    ivBaseCells[i][j].setImageDrawable(sea);
+                }
+                // Fill the top layout
+                if (cell.wasVisited()) {
+                    switch (cell.getShipStateInCell()) {
+                        case NO_SHIP:
+                            ivTopCells[i][j].setImageDrawable(water);
+                            break;
+                        case HIT:
+                            ivTopCells[i][j].setImageDrawable(shootHit);
+                            break;
+                        case SUNKEN:
+                            int slice = cell.getShipSlice();
+                            Drawable[] shipDrawable = getShipSunkenDrawables(cell.getShip().getType());
+                            ivTopCells[i][j].setImageDrawable(shipDrawable[slice]);
+                            if (cell.getShip().getOrientation().equals(Orientation.VERTICAL)) {
+                                ivTopCells[i][j].setRotation(90f);
+                            }
+                            break;
+                    }
+                }
+                linRowBase.addView(ivBaseCells[i][j], cellParams);
+                linRowTop.addView(ivTopCells[i][j], cellParams);
+            }
+            oceanBaseLayout.addView(linRowBase, oceanRowParams);
+            oceanTopLayout.addView(linRowTop, oceanRowParams);
+        }
+    }
+
+    public void printOceanVisited() {
+        LinearLayout.LayoutParams cellParams = new LinearLayout.LayoutParams(sizeOfCell, sizeOfCell);
+        LinearLayout.LayoutParams oceanRowParams = new LinearLayout.LayoutParams(sizeOfCell * oceanSize, sizeOfCell);
+
+        clearLayouts();
+
+        for (int i = 0; i < oceanSize; i++) {
+            LinearLayout linRowBase = new LinearLayout(context);
+            for (int j = 0; j < oceanSize; j++) {
+                ivBaseCells[i][j] = new ImageView(context);
+                OceanCell cell = ocean.getCell(i, j);
+                if (cell.wasVisited()) {
+                    switch (cell.getShipStateInCell()) {
+                        case NO_SHIP:
+                            ivBaseCells[i][j].setImageDrawable(water);
+                            break;
+                        case HIT:
+                            ivBaseCells[i][j].setImageDrawable(shootHit);
+                            break;
+                        case SUNKEN:
+                            int slice = cell.getShipSlice();
+                            Drawable[] shipDrawable = getShipSunkenDrawables(cell.getShip().getType());
+                            ivBaseCells[i][j].setImageDrawable(shipDrawable[slice]);
+                            if (cell.getShip().getOrientation().equals(Orientation.VERTICAL)) {
+                                ivBaseCells[i][j].setRotation(90f);
+                            }
+                            break;
+                    }
+                } else {
+                    ivBaseCells[i][j].setImageDrawable(sea);
+                }
+                linRowBase.addView(ivBaseCells[i][j], cellParams);
+            }
+            oceanBaseLayout.addView(linRowBase, oceanRowParams);
+        }
+    }
+
+    public void printOceanWhenAddingShips() {
+        LinearLayout.LayoutParams cellParams = new LinearLayout.LayoutParams(sizeOfCell, sizeOfCell);
+        LinearLayout.LayoutParams oceanRowParams = new LinearLayout.LayoutParams(sizeOfCell * oceanSize, sizeOfCell);
+
+        clearLayouts();
 
         for (int i = 0; i < oceanSize; i++) {
             LinearLayout linRow = new LinearLayout(context);
             for (int j = 0; j < oceanSize; j++) {
-                ivCells[i][j] = new ImageView(context);
-                ivCells[i][j].setBackground(sea);
-                linRow.addView(ivCells[i][j], cellParams);
+                ivBaseCells[i][j] = new ImageView(context);
+                ivBaseCells[i][j].setImageDrawable(sea);
+                linRow.addView(ivBaseCells[i][j], cellParams);
             }
-            oceanLayout.addView(linRow, oceanRowParams);
+            oceanBaseLayout.addView(linRow, oceanRowParams);
         }
         for (Ship ship : ocean.getShips()) {
-            displayShip(ship);
+            displayShipWhenAddingShips(ship);
             LinearLayout shipLayout = getShipLinearLayout(ship.getType());
             removeAllColorFilters(shipLayout);
         }
     }
 
-    private void displayShip(Ship ship) {
+    private void displayShipWhenAddingShips(Ship ship) {
         LinearLayout shipLayout = getShipLinearLayout(ship.getType());
         ImageView[] ivShip =  getShipImageViews(ship.getType());
         Drawable[] shipDrawable = getShipDrawables(ship.getType());
@@ -252,7 +409,7 @@ public class OceanPrinter {
                     linShip.addView(ivShip[k], cellParams);
                 }
                 shipLayout.bringToFront();
-                int[] coordsOnScreen = calculateRelativeCoordinatesOnScreen(ship, oceanLayout);
+                int[] coordsOnScreen = calculateRelativeCoordinatesOnScreen(ship, oceanBaseLayout);
                 LinearLayout.LayoutParams shipParams = new LinearLayout.LayoutParams(sizeOfCell * shipDrawable.length, sizeOfCell);
                 shipLayout.setPivotX(coordsOnScreen[0]);
                 shipLayout.setPivotY(coordsOnScreen[1] + sizeOfCell);
@@ -262,7 +419,7 @@ public class OceanPrinter {
             } else {
                 float rotation = ship.getOrientation().equals(Orientation.HORIZONTAL) ? 0f : 90f;
                 shipLayout.animate().rotation(rotation);
-                float[] xyValues = calculateXYAnimation(oceanLayout, ship.getCells().get(0).getCoordinates(),
+                float[] xyValues = calculateXYAnimation(oceanBaseLayout, ship.getCells().get(0).getCoordinates(),
                                                             shipInitialCoordinates.get(ship.getType()), ship.getOrientation());
                 shipLayout.animate().x(xyValues[0]).y(xyValues[1]).setDuration(MOVEMENT_DURATION);
             }
@@ -293,14 +450,14 @@ public class OceanPrinter {
 
     public void placeQuarters(KeypadQuarter currentQuarter) {
         int[] oceanCoords = new int[2];
-        oceanLayout.getLocationOnScreen(oceanCoords);
+        oceanBaseLayout.getLocationOnScreen(oceanCoords);
         int size = 4 * sizeOfCell;
+        oceanCoords[1] -= TOP_OFFSET;
 
         View quarterUpperLeft = ((Activity) context).findViewById(R.id.quarter_1);
         View quarterUpperRight = ((Activity) context).findViewById(R.id.quarter_2);
         View quarterLowerLeft = ((Activity) context).findViewById(R.id.quarter_3);
         View quarterLowerRight = ((Activity) context).findViewById(R.id.quarter_4);
-        View quarterFocus = ((Activity) context).findViewById(R.id.quarter_focus);
 
         placeQuarters(quarterUpperLeft, KeypadQuarter.UPPER_LEFT, oceanCoords, size);
         placeQuarters(quarterUpperRight, KeypadQuarter.UPPER_RIGHT, oceanCoords, size);
@@ -312,30 +469,30 @@ public class OceanPrinter {
     }
 
     private void placeQuarters(View view, KeypadQuarter quarter, int[] oceanCoords, int size) {
-        int topOffset = 38;
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(size, size);
         switch (quarter) {
             case UPPER_LEFT:
-                layoutParams.setMargins(oceanCoords[0], oceanCoords[1] - topOffset, 0, 0);
+                layoutParams.setMargins(oceanCoords[0], oceanCoords[1], 0, 0);
                 break;
             case UPPER_RIGHT:
-                layoutParams.setMargins(oceanCoords[0] + size, oceanCoords[1] - topOffset, 0, 0);
+                layoutParams.setMargins(oceanCoords[0] + size, oceanCoords[1], 0, 0);
                 break;
             case LOWER_LEFT:
-                layoutParams.setMargins(oceanCoords[0], oceanCoords[1] + size - topOffset, 0, 0);
+                layoutParams.setMargins(oceanCoords[0], oceanCoords[1] + size, 0, 0);
                 break;
             case LOWER_RIGHT:
-                layoutParams.setMargins(oceanCoords[0] + size, oceanCoords[1] + size - topOffset, 0, 0);
+                layoutParams.setMargins(oceanCoords[0] + size, oceanCoords[1] + size, 0, 0);
                 break;
         }
         view.setLayoutParams(layoutParams);
     }
 
+
     public KeypadQuarter changeQuarterFocus(View view) {
         View quarterFocus = ((Activity) context).findViewById(R.id.quarter_focus);
         int size = 4 * sizeOfCell;
         int[] oceanCoords = new int[2];
-        oceanLayout.getLocationOnScreen(oceanCoords);
+        oceanBaseLayout.getLocationOnScreen(oceanCoords);
         oceanCoords[1] -= TOP_OFFSET;
 
         switch (view.getId()) {
@@ -355,7 +512,16 @@ public class OceanPrinter {
                 quarterFocus.setX(oceanCoords[0] + size);
                 quarterFocus.setY(oceanCoords[1] + size);
                 return KeypadQuarter.LOWER_RIGHT;
+            default:
+                return null;
         }
-        return null;
+    }
+
+    public void fadeInQuarterFocus() {
+        quarterFocus.animate().alpha(1f).setDuration(QUARTER_FOCUS_BLINKING_DURATION);
+    }
+
+    public void fadeOutQuarterFocus() {
+        quarterFocus.animate().alpha(0f).setDuration(QUARTER_FOCUS_BLINKING_DURATION);
     }
 }

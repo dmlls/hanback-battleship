@@ -1,67 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
-    android:padding="30dp"
-    android:orientation="vertical"
-    tools:context=".BattleActivity">
+    tools:context=".BattleActivity" >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="20dp" >
+        <TextView
+            android:id="@+id/turn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textAllCaps="true" />
 
-    <TextView
-        android:id="@+id/turn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textAllCaps="true" />
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+            <LinearLayout
+                android:id="@+id/ocean_base"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"/>
 
-    <TextView
-        android:id="@+id/ocean"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:textSize="20sp"
-        android:lineSpacingMultiplier="0.9" />
+            <LinearLayout
+                android:id="@+id/ocean_top"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"/>
+        </FrameLayout>
 
-    <TextView
-        android:id="@+id/launch_missile_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"
-        android:text="@string/launch" />
+        <TextView
+            android:id="@+id/launch_missile_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:text="@string/launch" />
 
-    <TextView
-        android:id="@+id/result"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:textSize="25sp"
-        android:visibility="gone" />
+        <TextView
+            android:id="@+id/result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textSize="25sp"
+            android:visibility="gone" />
 
-    <Spinner
+        <Button
+            android:id="@+id/next_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/next"
+            android:textAllCaps="true"
+            android:visibility="gone"
+            android:onClick="onNextClicked" />
+
+        <TextView
+            android:id="@+id/already_hit_alert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/already_hit_alert"
+            android:textColor="@color/red"
+            android:layout_marginTop="5dp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <ImageView
         android:id="@+id/quarter_focus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp" />
+        android:background="@drawable/ic_quarter" />
 
-    <Button
-        android:id="@+id/next_button"
+    <View
+        android:id="@+id/quarter_1"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="@string/next"
-        android:textAllCaps="true"
-        android:visibility="gone"
-        android:onClick="onNextClicked" />
+        android:layout_height="wrap_content" />
 
-    <TextView
-        android:id="@+id/already_hit_alert"
+    <View
+        android:id="@+id/quarter_2"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/already_hit_alert"
-        android:textColor="@color/red"
-        android:layout_marginTop="5dp"
-        android:visibility="gone" />
+        android:layout_height="wrap_content" />
 
-</LinearLayout>
+    <View
+        android:id="@+id/quarter_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <View
+        android:id="@+id/quarter_4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</FrameLayout>

@@ -6,10 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.diego.hanbackbattleship.control.AutonomousPlayer;
@@ -17,13 +14,14 @@ import com.diego.hanbackbattleship.control.Player;
 import com.diego.hanbackbattleship.miscellaneous.DataHolder;
 import com.diego.hanbackbattleship.miscellaneous.KeyToCoordinateTranslator;
 import com.diego.hanbackbattleship.miscellaneous.KeypadQuarter;
+import com.diego.hanbackbattleship.miscellaneous.OceanPrinter;
 import com.diego.hanbackbattleship.model.Ocean;
 import com.diego.hanbackbattleship.model.ShipState;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class BattleActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class BattleActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String ID_OCEAN = "ocean";
     public static final String ID_OPPONENT = "opponent";
@@ -35,18 +33,19 @@ public class BattleActivity extends AppCompatActivity implements AdapterView.OnI
     private Player player;
     private AutonomousPlayer opponent;
 
-    private KeypadQuarter quarter = KeypadQuarter.UPPER_LEFT;
+    private OceanPrinter playerOceanPrinter;
+    private OceanPrinter opponentOceanPrinter;
+
+    private KeypadQuarter currentQuarter = KeypadQuarter.UPPER_LEFT;
 
     private boolean keyAlreadyPressed;
 
     private boolean playerTurn = true; // true if it's player's turn, false if it's opponent's
 
-    private TextView ocean;
     private TextView turn;
     private TextView launchMissileText;
     private TextView resultText;
     private Button nextButton;
-    private Spinner quarterSpinner;
     private TextView alert;
 
   //  private boolean stopThread;
@@ -64,27 +63,39 @@ public class BattleActivity extends AppCompatActivity implements AdapterView.OnI
 
         player.setOpponent(opponent);
         opponent.setOpponent(player);
+
+        playerOceanPrinter = new OceanPrinter(this, player.getOcean());
+        opponentOceanPrinter = new OceanPrinter(this, opponent.getOcean());
 /*
         scoreThread.setDaemon(true);
         scoreThread.start();*/
 
         turn = findViewById(R.id.turn);
-        ocean = findViewById(R.id.ocean);
         nextButton = findViewById(R.id.next_button);
         launchMissileText = findViewById(R.id.launch_missile_text);
         resultText = findViewById(R.id.result);
         alert = findViewById(R.id.already_hit_alert);
 
-        quarterSpinner = findViewById(R.id.quarter_focus);
-        quarterSpinner.setOnItemSelectedListener(this);
-
-        ArrayAdapter<CharSequence> adapterQuarter = ArrayAdapter.createFromResource(this,
-                R.array.quarter, android.R.layout.simple_spinner_item);
-        adapterQuarter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        quarterSpinner.setAdapter(adapterQuarter);
-
         turn.setText(R.string.your_turn);
-        printOcean();
+        opponentOceanPrinter.printOceanVisited(); // the player sees their opponent's ocean and vice-versa
+        opponentOceanPrinter.fadeInQuarterFocus();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onResume();
+
+        View quarterUpperLeft = findViewById(R.id.quarter_1);
+        View quarterUpperRight = findViewById(R.id.quarter_2);
+        View quarterLowerLeft = findViewById(R.id.quarter_3);
+        View quarterLowerRight = findViewById(R.id.quarter_4);
+
+        quarterUpperLeft.setOnClickListener(this);
+        quarterUpperRight.setOnClickListener(this);
+        quarterLowerLeft.setOnClickListener(this);
+        quarterLowerRight.setOnClickListener(this);
+
+        opponentOceanPrinter.placeQuarters(currentQuarter);
     }
 
     public void onNextClicked(View view) {
@@ -97,25 +108,26 @@ public class BattleActivity extends AppCompatActivity implements AdapterView.OnI
             if (getPlayerTurn().equals(opponent)) {
                 turn.setText(R.string.opponents_turn);
                 launchMissileText.setVisibility(GONE);
-                quarterSpinner.setVisibility(GONE);
                 ShipState result = opponent.launchMissile();
                 setResultText(result);
+                playerOceanPrinter.printOceanVisitedWithShips();
+                opponentOceanPrinter.fadeOutQuarterFocus();
             } else {
                 turn.setText(R.string.your_turn);
                 resultText.setVisibility(GONE);
                 nextButton.setVisibility(GONE);
                 launchMissileText.setVisibility(VISIBLE);
-                quarterSpinner.setVisibility(VISIBLE);
+                opponentOceanPrinter.printOceanVisited();
+                opponentOceanPrinter.fadeInQuarterFocus();
             }
             keyAlreadyPressed = false;
-            printOcean();
         }
     }
 
     @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) { // TODO: unable when opponent's turn
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (!keyAlreadyPressed && getPlayerTurn().equals(player)) {
-            int[] coords = KeyToCoordinateTranslator.translate(keyCode, quarter);
+            int[] coords = KeyToCoordinateTranslator.translate(keyCode, currentQuarter);
             ShipState result = player.launchMissile(coords[0], coords[1]);
             if (result == null) {
                 nextButton.setEnabled(false);
@@ -126,13 +138,13 @@ public class BattleActivity extends AppCompatActivity implements AdapterView.OnI
                 System.out.println(player.getScore());
                 launchMissileText.setVisibility(GONE);
                 alert.setVisibility(GONE);
-                quarterSpinner.setVisibility(GONE);
                 resultText.setVisibility(VISIBLE);
                 nextButton.setEnabled(true);
                 nextButton.setFocusable(false);
                 nextButton.setVisibility(VISIBLE);
                 keyAlreadyPressed = true;
-                printOcean();
+                opponentOceanPrinter.printOceanVisited();
+                opponentOceanPrinter.fadeOutQuarterFocus();
                 return true;
             }
         }
@@ -153,10 +165,6 @@ public class BattleActivity extends AppCompatActivity implements AdapterView.OnI
                     break;
             }
         }
-    }
-
-    private void printOcean() {
-        ocean.setText(getPlayerWithoutTurn().printOceanOnlyVisited());
     }
 
     private boolean isGameFinished() {
@@ -184,20 +192,11 @@ public class BattleActivity extends AppCompatActivity implements AdapterView.OnI
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (position == 0) {
-            quarter = KeypadQuarter.UPPER_LEFT;
-        } else if (position == 1) {
-            quarter = KeypadQuarter.UPPER_RIGHT;
-        } else if (position == 2) {
-            quarter = KeypadQuarter.LOWER_LEFT;
-        } else {
-            quarter = KeypadQuarter.LOWER_RIGHT;
+    public void onClick(View v) {
+        if (!keyAlreadyPressed) {
+            currentQuarter = opponentOceanPrinter.changeQuarterFocus(v);
         }
     }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {}
 /*
     private class ScoreThread extends Thread {
         public void run() {
