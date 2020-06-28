@@ -75,7 +75,7 @@ public class BattleActivity extends AppCompatActivity implements AdapterView.OnI
         resultText = findViewById(R.id.result);
         alert = findViewById(R.id.already_hit_alert);
 
-        quarterSpinner = findViewById(R.id.quarter);
+        quarterSpinner = findViewById(R.id.quarter_focus);
         quarterSpinner.setOnItemSelectedListener(this);
 
         ArrayAdapter<CharSequence> adapterQuarter = ArrayAdapter.createFromResource(this,
