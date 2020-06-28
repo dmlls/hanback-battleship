@@ -53,11 +53,11 @@ public class InsertShips extends AppCompatActivity implements View.OnClickListen
         okButton = findViewById(R.id.ok_button);
         rotateButton = findViewById(R.id.rotate_button);
 
-        playerOceanPrinter.printOcean();
+        playerOceanPrinter.printOceanWhenAddingShips();
     }
 
     @Override
-    public void onWindowFocusChanged (boolean hasFocus) {
+    public void onWindowFocusChanged(boolean hasFocus) {
         super.onResume();
 
         View quarterUpperLeft = findViewById(R.id.quarter_1);
@@ -80,7 +80,7 @@ public class InsertShips extends AppCompatActivity implements View.OnClickListen
             okButton.setEnabled(false);
             rotateButton.setEnabled(false);
             orientation = Orientation.HORIZONTAL;
-            playerOceanPrinter.printOcean(shipTypes[shipCounter]);
+            playerOceanPrinter.printOceanWhenAddingShips(shipTypes[shipCounter]);
         } else {
             Intent intent = new Intent(this, BattleActivity.class);
             DataHolder.getInstance().save(BattleActivity.ID_OCEAN, player.getOcean());
@@ -113,7 +113,7 @@ public class InsertShips extends AppCompatActivity implements View.OnClickListen
         okButton.setEnabled(shipWasAdded);
         if (shipWasAdded) {
             alert.setVisibility(View.GONE);
-            playerOceanPrinter.printOcean(shipTypes[shipCounter]);
+            playerOceanPrinter.printOceanWhenAddingShips(shipTypes[shipCounter]);
             if (shipCounter == ShipType.values().length - 1) {
                 okButton.setText(R.string.next);
             }
