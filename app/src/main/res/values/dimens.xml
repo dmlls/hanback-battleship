@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="text_size_small">20sp</dimen>
+    <dimen name="text_size_regular">25sp</dimen>
+    <dimen name="size_buttons">50dp</dimen>
+    <dimen name="width_corners_top_small">130dp</dimen>
+    <dimen name="height_corners_top_small">9dp</dimen>
+    <dimen name="width_corners_left_right">15dp</dimen>
+    <dimen name="height_corners_left_right">40dp</dimen>
+    <dimen name="margin_very_very_small">2dp</dimen>
+    <dimen name="margin_very_small">5dp</dimen>
+    <dimen name="margin_small">10dp</dimen>
+    <dimen name="margin_regular">20dp</dimen>
+    <dimen name="margin_big">40dp</dimen>
+    <dimen name="margin_very_big">60dp</dimen>
+    <dimen name="ocean_frame_size">260dp</dimen>
+</resources>
