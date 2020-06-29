@@ -4,69 +4,134 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".InsertShips"
-    android:id="@+id/frame_layout">
+    android:id="@+id/frame_layout"
+    android:background="@drawable/ic_background"
+    android:foregroundGravity="center_horizontal" >
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:layout_marginTop="20dp" >
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/place_ship"
-            android:textSize="15sp"
-            android:layout_marginTop="15dp" />
+        android:foregroundGravity="center_horizontal">
 
-        <TextView
-            android:id="@+id/ship_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="25sp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp"/>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="600dp"
+            android:scaleType="fitCenter"
+            android:src="@mipmap/ocean_no_frame"
+            android:contentDescription="@string/ocean"
+            android:paddingTop="-50dp"
+            android:layout_gravity="center_horizontal" />
 
         <LinearLayout
             android:id="@+id/ocean_base"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"/>
+            android:orientation="vertical"
+            android:layout_marginLeft="35dp"
+            android:layout_marginStart="35dp"
+            android:layout_marginTop="196dp" />
+
+        <ImageView
+            android:id="@+id/next_button"
+            android:layout_width="@dimen/size_buttons"
+            android:layout_height="@dimen/size_buttons"
+            android:scaleType="fitXY"
+            android:alpha="0"
+            android:layout_gravity="end"
+            android:src="@mipmap/next_button"
+            android:layout_marginTop="450dp"
+            android:layout_marginEnd="100dp"
+            android:layout_marginRight="100dp" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="20dp" >
-            <Button
-                android:id="@+id/rotate_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="@dimen/margin_big" >
+            <ImageView
+                android:layout_width="@dimen/width_corners_top_small"
+                android:layout_height="@dimen/height_corners_top_small"
+                android:contentDescription="@string/corners"
+                android:src="@drawable/ic_corners_top_small"
+                android:layout_marginTop="@dimen/margin_regular" />
+            <TextView
+                android:id="@+id/place_ship_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/rotate"
-                android:textAllCaps="true"
-                android:enabled="false"
-                android:onClick="onRotateClicked"
-                android:layout_marginRight="20dp"
-                android:layout_marginEnd="20dp"/>
-            <Button
-                android:id="@+id/ok_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/ok"
-                android:textAllCaps="true"
-                android:enabled="false"
-                android:onClick="onOkClicked"/>
-        </LinearLayout>
+                android:text="@string/place_ship"
+                android:textSize="@dimen/text_size_small"
+                android:alpha="0.7"
+                android:textColor="@color/colorPrimary" />
 
-        <TextView
-            android:id="@+id/already_boat_alert"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/already_boat_alert"
-            android:textColor="@color/red"
-            android:layout_marginTop="5dp"
-            android:visibility="gone" />
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="@dimen/margin_very_very_small">
+                <ImageView
+                    android:id="@+id/corners_left"
+                    android:layout_width="@dimen/width_corners_left_right"
+                    android:layout_height="@dimen/height_corners_left_right"
+                    android:src="@drawable/ic_corners_left"
+                    android:contentDescription="@string/corners"
+                    android:alpha="0.3" />
+                <TextView
+                    android:id="@+id/ship_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_size_small"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_marginLeft="@dimen/text_size_regular"
+                    android:layout_marginRight="@dimen/text_size_regular"
+                    android:layout_marginBottom="1dp"/>
+                <ImageView
+                    android:id="@+id/corners_right"
+                    android:layout_width="@dimen/width_corners_left_right"
+                    android:layout_height="@dimen/height_corners_left_right"
+                    android:src="@drawable/ic_corners_right"
+                    android:contentDescription="@string/corners"
+                    android:alpha="0.3" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="@dimen/ocean_frame_size"
+                android:layout_height="@dimen/ocean_frame_size"
+                android:scaleType="fitXY"
+                android:layout_marginTop="37dp"
+                android:src="@mipmap/ocean_frame"
+                android:contentDescription="@string/ocean"
+                android:layout_gravity="center_horizontal" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="23dp" >
+                <ImageView
+                    android:id="@+id/rotate_button"
+                    android:layout_width="@dimen/size_buttons"
+                    android:layout_height="@dimen/size_buttons"
+                    android:scaleType="fitXY"
+                    android:enabled="false"
+                    android:alpha="0.5"
+                    android:onClick="onRotateClicked"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:contentDescription="@string/rotate"
+                    android:src="@mipmap/rotate_button" />
+
+                <ImageView
+                    android:id="@+id/place_ship_button"
+                    android:layout_width="@dimen/size_buttons"
+                    android:layout_height="@dimen/size_buttons"
+                    android:scaleType="fitXY"
+                    android:alpha="0.5"
+                    android:src="@mipmap/place_ship_button" />
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/battleship"
@@ -96,7 +161,7 @@
         android:id="@+id/quarter_focus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/ic_quarter" />
+        android:background="@mipmap/quarter_focus" />
 
     <View
         android:id="@+id/quarter_1"

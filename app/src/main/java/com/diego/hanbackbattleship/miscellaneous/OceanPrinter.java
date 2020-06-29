@@ -29,7 +29,7 @@ import pl.droidsonroids.gif.GifDrawable;
 
 public class OceanPrinter {
 
-    private static final int HORIZONTAL_MARGIN = 15;
+    private static final int HORIZONTAL_MARGIN = 13;
     private static final int TOP_OFFSET = 38;
 
     private static final int QUARTER_FOCUS_BLINKING_DURATION = 3000;
@@ -37,6 +37,7 @@ public class OceanPrinter {
     private static final int MOVEMENT_DURATION = 600;
     public static final int SHOOTING_ANIMATION_DURATION = 1500;
     public static final int CHANGE_TURN_ANIMATION_DURATION = 1000;
+    public static final int SHORT_DURATION = 500;
 
     private HashMap<ShipType, int[]> shipInitialCoordinates;
 
@@ -275,10 +276,13 @@ public class OceanPrinter {
 
     public void printOceanWhenAddingShips(ShipType shipType) {
         printOceanWhenAddingShips();
-        if (currentBlinkingShip != null && !currentBlinkingShip.equals(getShipLinearLayout(shipType))) {
+        if (currentBlinkingShip != null && !currentBlinkingShip.equals(getShipLinearLayout(shipType))
+                || ocean.getShips().size() == ShipType.values().length) {
             stopShipBlinking(currentBlinkingShip);
         }
-        startShipBlinking(getShipLinearLayout(shipType));
+        if (ocean.getShips().size() != ShipType.values().length) {
+            startShipBlinking(getShipLinearLayout(shipType));
+        }
     }
 
     private void clearLayouts() {
@@ -476,7 +480,7 @@ public class OceanPrinter {
 
         clearLayouts();
 
-        for (int i = 0; i < oceanSize; i++) {
+     /*   for (int i = 0; i < oceanSize; i++) {
             LinearLayout linRow = new LinearLayout(context);
             for (int j = 0; j < oceanSize; j++) {
                 ivBaseCells[i][j] = new ImageView(context);
@@ -484,7 +488,7 @@ public class OceanPrinter {
                 linRow.addView(ivBaseCells[i][j], cellParams);
             }
             oceanBaseLayout.addView(linRow, oceanRowParams);
-        }
+        }*/
         for (Ship ship : ocean.getShips()) {
             displayShipWhenAddingShips(ship);
             LinearLayout shipLayout = getShipLinearLayout(ship.getType());

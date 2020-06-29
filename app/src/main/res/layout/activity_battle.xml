@@ -56,14 +56,14 @@
             android:visibility="gone" />
 
         <Button
-            android:id="@+id/next_button"
+            android:id="@+id/place_ship_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="@string/next"
             android:textAllCaps="true"
             android:visibility="gone"
-            android:onClick="onNextClicked" />
+            android:onClick="onPlaceShipClicked" />
 
         <TextView
             android:id="@+id/already_hit_alert"
@@ -79,7 +79,7 @@
         android:id="@+id/quarter_focus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/ic_quarter" />
+        android:background="@drawable/ic_quarter_focus" />
 
     <View
         android:id="@+id/quarter_1"

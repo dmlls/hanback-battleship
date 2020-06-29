@@ -76,7 +76,7 @@ public class BattleActivity extends AppCompatActivity implements View.OnClickLis
         handler = new Handler();
 
         turn = findViewById(R.id.turn);
-        nextButton = findViewById(R.id.next_button);
+        nextButton = findViewById(R.id.place_ship_button);
         launchMissileText = findViewById(R.id.launch_missile_text);
         resultText = findViewById(R.id.result);
         alert = findViewById(R.id.already_hit_alert);
