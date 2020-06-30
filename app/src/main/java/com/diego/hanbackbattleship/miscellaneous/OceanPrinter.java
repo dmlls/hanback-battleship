@@ -5,12 +5,17 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.diego.hanbackbattleship.BattleActivity;
 import com.diego.hanbackbattleship.R;
@@ -30,14 +35,16 @@ import pl.droidsonroids.gif.GifDrawable;
 public class OceanPrinter {
 
     private static final int HORIZONTAL_MARGIN = 13;
-    private static final int TOP_OFFSET = 38;
 
     private static final int QUARTER_FOCUS_BLINKING_DURATION = 3000;
     private static final int SHIP_BLINKING_DURATION = 700;
     private static final int MOVEMENT_DURATION = 600;
     public static final int SHOOTING_ANIMATION_DURATION = 1500;
-    public static final int CHANGE_TURN_ANIMATION_DURATION = 1000;
+    public static final int CHANGE_TURN_ANIMATION_DURATION = 500;
+    public static final int VERY_SHORT_DURATION = 200;
     public static final int SHORT_DURATION = 500;
+    public static final int MEDIUM_DURATION = 1000;
+    public static final int LONG_DURATION = 3000;
 
     private HashMap<ShipType, int[]> shipInitialCoordinates;
 
@@ -75,12 +82,25 @@ public class OceanPrinter {
     private Drawable sea;
     private Drawable water;
 
+    private ImageView bubbles1;
+    private ImageView bubbles2;
+    private ImageView bubbles3;
+
     private LinearLayout oceanBaseLayout;
     private LinearLayout oceanTopLayout;
     private LinearLayout battleshipLayout;
     private LinearLayout carrierLayout;
     private LinearLayout cruiserLayout;
     private LinearLayout submarineLayout;
+
+    public OceanPrinter(Context context) {
+        this.context = context;
+        try {
+            initializeResources();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
 
     public OceanPrinter(Context context, Ocean ocean) {
         this.context = context;
@@ -140,7 +160,7 @@ public class OceanPrinter {
         shootWater = new GifDrawable(context.getResources(), R.raw.shoot_water);
 
         sea = context.getResources().getDrawable(R.drawable.ic_sea);
-        water = context.getResources().getDrawable(R.drawable.ic_water);
+        water = context.getResources().getDrawable(R.drawable.ic_cross);
 
         sizeOfCell = Math.round((float) context.getResources().getDisplayMetrics().widthPixels / oceanSize) - HORIZONTAL_MARGIN;
 
@@ -150,6 +170,10 @@ public class OceanPrinter {
         carrierLayout = ((Activity) context).findViewById(R.id.carrier);
         cruiserLayout = ((Activity) context).findViewById(R.id.cruiser);
         submarineLayout = ((Activity) context).findViewById(R.id.submarine);
+
+        bubbles1 = ((Activity) context).findViewById(R.id.bubbles_1);
+        bubbles2 = ((Activity) context).findViewById(R.id.bubbles_2);
+        bubbles3 = ((Activity) context).findViewById(R.id.bubbles_3);
 
         ivBaseCells = new ImageView[oceanSize][oceanSize];
         ivTopCells = new ImageView[oceanSize][oceanSize];
@@ -179,9 +203,21 @@ public class OceanPrinter {
         }
     }
 
-    private void startBlinking(View view, int blinkingDuration, float minAlpha) {
-        Animation anim = new AlphaAnimation(1.0f, minAlpha);
+    private void startBlinking(View view, int blinkingDuration, float minAlpha, float maxAlpha) {
+        Animation anim = new AlphaAnimation(maxAlpha, minAlpha);
         anim.setDuration(blinkingDuration);
+        anim.setRepeatMode(Animation.REVERSE);
+        anim.setRepeatCount(Animation.INFINITE);
+        view.startAnimation(anim);
+    }
+
+    private void startRotation(View view, int rotationSpeed, float fromDegrees, float toDegrees) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        float height = displayMetrics.heightPixels;
+        float width = displayMetrics.widthPixels;
+        Animation anim = new RotateAnimation(fromDegrees, toDegrees, width/2, height/2);
+        anim.setDuration(rotationSpeed);
         anim.setRepeatMode(Animation.REVERSE);
         anim.setRepeatCount(Animation.INFINITE);
         view.startAnimation(anim);
@@ -193,7 +229,7 @@ public class OceanPrinter {
 
     private void startShipBlinking(View view) {
         if (view != null && !blinkWasStarted) {
-            startBlinking(view, SHIP_BLINKING_DURATION, 0.0f);
+            startBlinking(view, SHIP_BLINKING_DURATION, 0.0f, 1f);
             blinkWasStarted = true;
         }
         currentBlinkingShip = view;
@@ -276,13 +312,14 @@ public class OceanPrinter {
 
     public void printOceanWhenAddingShips(ShipType shipType) {
         printOceanWhenAddingShips();
-        if (currentBlinkingShip != null && !currentBlinkingShip.equals(getShipLinearLayout(shipType))
-                || ocean.getShips().size() == ShipType.values().length) {
+        if (currentBlinkingShip != null && !currentBlinkingShip.equals(getShipLinearLayout(shipType))) {
             stopShipBlinking(currentBlinkingShip);
         }
-        if (ocean.getShips().size() != ShipType.values().length) {
-            startShipBlinking(getShipLinearLayout(shipType));
-        }
+        startShipBlinking(getShipLinearLayout(shipType));
+    }
+
+    public void stopBlinkingCurrentShip() {
+        stopShipBlinking(currentBlinkingShip);
     }
 
     private void clearLayouts() {
@@ -316,9 +353,9 @@ public class OceanPrinter {
                     if (cell.getShip().getOrientation().equals(Orientation.VERTICAL)) {
                         ivBaseCells[i][j].setRotation(90f);
                     }
-                } else {
+                } /*else {
                     ivBaseCells[i][j].setImageDrawable(sea);
-                }
+                }*/
                 // Fill the top layout
                 if (cell.wasVisited()) {
                     switch (cell.getShipStateInCell()) {
@@ -374,9 +411,9 @@ public class OceanPrinter {
                             }
                             break;
                     }
-                } else {
+                } /*else {
                     ivBaseCells[i][j].setImageDrawable(sea);
-                }
+                } */
                 linRowBase.addView(ivBaseCells[i][j], cellParams);
             }
             oceanBaseLayout.addView(linRowBase, oceanRowParams);
@@ -391,6 +428,7 @@ public class OceanPrinter {
         } else {
             printOceanVisited();
         }
+        resultTextAnimation(result);
         if (result.equals(ShipState.NO_SHIP)) {
             ivCell.setImageDrawable(shootWater);
         } else { // HIT or SUNKEN
@@ -412,6 +450,36 @@ public class OceanPrinter {
                 }
             }
         }, SHOOTING_ANIMATION_DURATION);
+    }
+
+    private void resultTextAnimation(ShipState result) {
+        final TextView resultText = ((Activity) context).findViewById(R.id.result);
+        if (result != null) {
+            switch (result) {
+                case NO_SHIP:
+                    resultText.setText(R.string.water);
+                    break;
+                case HIT:
+                    resultText.setText(R.string.hit);
+                    break;
+                case SUNKEN:
+                    resultText.setText(R.string.sunken);
+                    break;
+            }
+            resultText.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    resultText.animate().scaleXBy(0.5f).scaleYBy(0.5f).alpha(1f).setDuration(OceanPrinter.VERY_SHORT_DURATION);
+                    resultText.animate().alpha(1f).setDuration(SHORT_DURATION);
+                    resultText.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            resultText.animate().alpha(0f).setDuration(SHORT_DURATION);
+                        }
+                    }, VERY_SHORT_DURATION);
+                }
+            }, SHORT_DURATION);
+        }
     }
 
     private ImageView getCellImageView(int[] boardCoords) {
@@ -454,6 +522,9 @@ public class OceanPrinter {
         }
     }
 
+    public void playChangeTurnAnimation(final OceanPrinter opponentOceanPrinter, final boolean displayShipsAfterAnimation) { }
+
+    /*
     public void playChangeTurnAnimation(final OceanPrinter opponentOceanPrinter, final boolean displayShipsAfterAnimation) {
         final FrameLayout oceanContainer = ((Activity) context).findViewById(R.id.ocean_container);
         final float initialX = oceanContainer.getX();
@@ -472,7 +543,7 @@ public class OceanPrinter {
                 oceanContainer.animate().x(initialX).alpha(1f).setDuration(CHANGE_TURN_ANIMATION_DURATION / 3);
             }
         }, CHANGE_TURN_ANIMATION_DURATION / 2);
-    }
+    } */
 
     public void printOceanWhenAddingShips() {
         LinearLayout.LayoutParams cellParams = new LinearLayout.LayoutParams(sizeOfCell, sizeOfCell);
@@ -529,12 +600,43 @@ public class OceanPrinter {
         }
     }
 
+    public void positionAlreadyHitAnimation(int[] coords) {
+        final FrameLayout container = ((Activity) context).findViewById(R.id.ocean_container);
+        int[] frameLayoutCoordsOnScreen = new int[2];
+        container.getLocationOnScreen(frameLayoutCoordsOnScreen);
+        int[] oceanLayoutCoordsOnScreen = new int[2];
+        oceanBaseLayout.getLocationOnScreen(oceanLayoutCoordsOnScreen);
+        final ImageView cell = new ImageView(context);
+        cell.setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+        cell.setImageDrawable(water);
+        cell.getDrawable().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(sizeOfCell, sizeOfCell);
+        int leftMarginOffset = oceanLayoutCoordsOnScreen[0] - frameLayoutCoordsOnScreen[0];
+        layoutParams.setMargins(coords[1] * sizeOfCell + leftMarginOffset, coords[0] * sizeOfCell, 0, 0);
+        cell.setLayoutParams(layoutParams);
+        cell.setAlpha(0f);
+        container.addView(cell);
+        cell.animate().alpha(0.7f).setDuration(SHORT_DURATION / 2);
+        cell.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                cell.animate().alpha(0f).setDuration(MEDIUM_DURATION);
+                cell.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        container.removeView(cell);
+                    }
+                }, MEDIUM_DURATION);
+            }
+        }, SHORT_DURATION);
+    }
+
     private int[] calculateRelativeCoordinatesOnScreen(int[] coordsStartCell, View view) {
         int[] cordsOnScreen = new int[2];
         int[] viewCoordsOnScreen = new int[2];
         view.getLocationOnScreen(viewCoordsOnScreen);
         cordsOnScreen[0] = viewCoordsOnScreen[0] + coordsStartCell[1] * sizeOfCell;
-        cordsOnScreen[1] = viewCoordsOnScreen[1] + coordsStartCell[0] * sizeOfCell - TOP_OFFSET;
+        cordsOnScreen[1] = viewCoordsOnScreen[1] + coordsStartCell[0] * sizeOfCell;
         return cordsOnScreen;
     }
 
@@ -554,7 +656,6 @@ public class OceanPrinter {
         int[] oceanCoords = new int[2];
         oceanBaseLayout.getLocationOnScreen(oceanCoords);
         int size = 4 * sizeOfCell;
-        oceanCoords[1] -= TOP_OFFSET;
 
         View quarterUpperLeft = ((Activity) context).findViewById(R.id.quarter_1);
         View quarterUpperRight = ((Activity) context).findViewById(R.id.quarter_2);
@@ -567,7 +668,7 @@ public class OceanPrinter {
         placeQuarters(quarterLowerRight, KeypadQuarter.LOWER_RIGHT, oceanCoords, size);
         placeQuarters(quarterFocus, currentQuarter, oceanCoords, size);
 
-        startBlinking(quarterFocus, QUARTER_FOCUS_BLINKING_DURATION, 0.5f);
+        startBlinking(quarterFocus, QUARTER_FOCUS_BLINKING_DURATION, 0.5f, 1f);
     }
 
     private void placeQuarters(View view, KeypadQuarter quarter, int[] oceanCoords, int size) {
@@ -594,7 +695,6 @@ public class OceanPrinter {
         int size = 4 * sizeOfCell;
         int[] oceanCoords = new int[2];
         oceanBaseLayout.getLocationOnScreen(oceanCoords);
-        oceanCoords[1] -= TOP_OFFSET;
 
         switch (view.getId()) {
             case R.id.quarter_1:
@@ -624,5 +724,18 @@ public class OceanPrinter {
 
     public void fadeOutQuarterFocus() {
         quarterFocus.animate().alpha(0f).setDuration(QUARTER_FOCUS_BLINKING_DURATION);
+    }
+
+    public void startBackgroundAnimation() {
+        startBlinking(bubbles1, LONG_DURATION / 2, 0.5f, 0.8f);
+        startBlinking(bubbles2, SHORT_DURATION * 2, 0.2f, 0.6f);
+        startBlinking(bubbles3, SHORT_DURATION * 3, 0.3f, 0.7f);
+        startRotation(bubbles1, LONG_DURATION * 15, 210f, 0f);
+        startRotation(bubbles2, LONG_DURATION * 13, 0f, 200f);
+        startRotation(bubbles3, LONG_DURATION * 14, 0f, 150f);
+    }
+
+    public int getSizeOfCell() {
+        return sizeOfCell;
     }
 }
