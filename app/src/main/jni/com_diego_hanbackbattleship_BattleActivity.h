@@ -71,11 +71,11 @@ extern "C" {
 #define com_diego_hanbackbattleship_BattleActivity_MAX_NUM_PENDING_FRAGMENT_ACTIVITY_RESULTS 65534L
 /*
  * Class:     com_diego_hanbackbattleship_BattleActivity
- * Method:    SegmentControl
- * Signature: (I)I
+ * Method:    FLEDControl
+ * Signature: (IIII)I
  */
-JNIEXPORT jint JNICALL Java_com_diego_hanbackbattleship_BattleActivity_SegmentControl
-  (JNIEnv *, jobject, jint);
+JNIEXPORT jint JNICALL Java_com_diego_hanbackbattleship_BattleActivity_FLEDControl
+  (JNIEnv *, jobject, jint, jint, jint, jint);
 
 #ifdef __cplusplus
 }

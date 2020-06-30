@@ -3,27 +3,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
     tools:context=".BattleActivity"
-    android:id="@+id/root_frame_layout" >
-    <LinearLayout
+    android:id="@+id/root_frame_layout"
+    android:background="@drawable/ic_background"
+    android:foregroundGravity="center_horizontal" >
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:layout_marginTop="20dp" >
-        <TextView
-            android:id="@+id/turn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textAllCaps="true" />
+        android:foregroundGravity="center_horizontal">
+
+        <ImageView
+            android:id="@+id/ocean_background"
+            android:layout_width="match_parent"
+            android:layout_height="600dp"
+            android:scaleType="fitCenter"
+            android:src="@mipmap/ocean_no_frame"
+            android:contentDescription="@string/ocean"
+            android:paddingTop="-50dp"
+            android:layout_gravity="center_horizontal" />
 
         <FrameLayout
             android:id="@+id/ocean_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal" >
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="170dp"
+            android:foregroundGravity="center_horizontal" >
             <LinearLayout
                 android:id="@+id/ocean_base"
                 android:layout_width="wrap_content"
@@ -39,47 +45,127 @@
                 android:layout_gravity="center_horizontal" />
         </FrameLayout>
 
-        <TextView
-            android:id="@+id/launch_missile_text"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/linear_layout_container"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
-            android:text="@string/launch" />
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="@dimen/margin_big" >
 
-        <TextView
-            android:id="@+id/result"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:textSize="25sp"
-            android:visibility="gone" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="@dimen/margin_very_very_small">
+                <ImageView
+                    android:id="@+id/corners_left"
+                    android:layout_width="@dimen/width_corners_left_right"
+                    android:layout_height="@dimen/height_corners_left_right"
+                    android:src="@drawable/ic_corners_left"
+                    android:contentDescription="@string/corners"
+                    android:alpha="0.3" />
+                <TextView
+                    android:id="@+id/turn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_size_small"
+                    android:textColor="@color/colorPrimary"
+                    android:textAllCaps="true"
+                    android:layout_marginLeft="@dimen/margin_small"
+                    android:layout_marginRight="@dimen/margin_small"
+                    android:layout_marginBottom="1dp"/>
+                <ImageView
+                    android:id="@+id/corners_right"
+                    android:layout_width="@dimen/width_corners_left_right"
+                    android:layout_height="@dimen/height_corners_left_right"
+                    android:src="@drawable/ic_corners_right"
+                    android:contentDescription="@string/corners"
+                    android:alpha="0.3" />
+            </LinearLayout>
 
-        <Button
-            android:id="@+id/place_ship_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/next"
-            android:textAllCaps="true"
-            android:visibility="gone"
-            android:onClick="onPlaceShipClicked" />
+            <TextView
+                android:id="@+id/subtitle"
+                android:layout_marginTop="@dimen/margin_small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_size_small"
+                android:alpha="0.7"
+                android:textColor="@color/colorPrimary" />
 
-        <TextView
-            android:id="@+id/already_hit_alert"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/already_hit_alert"
-            android:textColor="@color/red"
-            android:layout_marginTop="5dp"
-            android:visibility="gone" />
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/corners_subtitle"
+                android:layout_width="@dimen/width_corners_top_small"
+                android:layout_height="@dimen/height_corners_top_small"
+                android:contentDescription="@string/corners"
+                android:src="@drawable/ic_corners_top_small"
+                android:rotation="180" />
+
+            <ImageView
+                android:id="@+id/ocean_frame"
+                android:layout_width="@dimen/ocean_frame_size"
+                android:layout_height="@dimen/ocean_frame_size"
+                android:scaleType="fitXY"
+                android:layout_marginTop="46dp"
+                android:src="@mipmap/ocean_frame"
+                android:contentDescription="@string/ocean"
+                android:layout_gravity="center_horizontal" />
+
+            <ImageView
+                android:id="@+id/next_button"
+                android:layout_width="@dimen/size_buttons"
+                android:layout_height="@dimen/size_buttons"
+                android:scaleType="fitXY"
+                android:alpha="0"
+                android:layout_gravity="center_horizontal"
+                android:src="@mipmap/next_button"
+                android:layout_marginTop="23dp" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/bubbles_1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_bubbles_1"
+            android:contentDescription="@string/corners" />
+
+        <ImageView
+            android:id="@+id/bubbles_2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:alpha="0.6"
+            android:src="@drawable/ic_bubbles_2"
+            android:contentDescription="@string/corners" />
+
+        <ImageView
+            android:id="@+id/bubbles_3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:alpha="0.7"
+            android:src="@drawable/ic_bubbles_3"
+            android:contentDescription="@string/corners" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textSize="@dimen/text_size_big"
+        android:text="@string/water"
+        android:alpha="0"
+        android:textColor="@color/colorPrimary" />
 
     <ImageView
         android:id="@+id/quarter_focus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/ic_quarter_focus" />
+        android:background="@mipmap/quarter_focus" />
 
     <View
         android:id="@+id/quarter_1"
@@ -100,4 +186,5 @@
         android:id="@+id/quarter_4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
 </FrameLayout>

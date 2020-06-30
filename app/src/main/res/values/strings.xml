@@ -4,12 +4,13 @@
     <string name="coordinateX">Coordinate X</string>
     <string name="coordinateY">Coordinate Y</string>
     <string name="corners">corners</string>
+    <string name="bubbles">bubbles</string>
     <string name="ocean">ocean</string>
-    <string name="ok">Ok</string>
     <string name="rotate">Rotate</string>
     <string name="next">Next</string>
     <string name="your_turn">Your turn</string>
-    <string name="opponents_turn">Opponent\'s turn</string>
+    <string name="opponents">Opponent\'s</string>
+    <string name="turn">turn</string>
     <string name="launch">Launch missile</string>
     <string name="water">WATER!</string>
     <string name="hit">SHIP HIT!</string>
@@ -24,8 +25,9 @@
         <item>3</item>
         <item>4</item>
     </string-array>
-    <string name="you_won">YOU WON!</string>
+    <string name="you">YOU</string>
+    <string name="won">WON!</string>
+    <string name="lost">LOST!</string>
     <string name="game_over">GAME OVER</string>
     <string name="play_again">play again</string>
-    <string name="already_hit_alert">You already hit that position.</string>
 </resources>

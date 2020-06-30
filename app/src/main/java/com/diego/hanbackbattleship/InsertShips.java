@@ -9,6 +9,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.diego.hanbackbattleship.control.Player;
@@ -28,9 +29,6 @@ public class InsertShips extends AppCompatActivity implements View.OnClickListen
 
     private OceanPrinter playerOceanPrinter;
 
-    Typeface exxaGameTypeFace;
-    Typeface gameCubeTypeFace;
-
     private boolean placeShipButtonEnabled = false;
     private boolean rotateButtonEnabled = false;
     private boolean nextButtonEnabled = false;
@@ -47,7 +45,6 @@ public class InsertShips extends AppCompatActivity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_insert_ships);
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -90,8 +87,8 @@ public class InsertShips extends AppCompatActivity implements View.OnClickListen
         TextView placeShipText = findViewById(R.id.place_ship_text);
 
         // set fonts
-        exxaGameTypeFace = Typeface.createFromAsset(getAssets(), "fonts/exxa_game.ttf");
-        gameCubeTypeFace = Typeface.createFromAsset(getAssets(), "fonts/game_cube.ttf");
+        Typeface exxaGameTypeFace = Typeface.createFromAsset(getAssets(), "fonts/exxa_game.ttf");
+        Typeface gameCubeTypeFace = Typeface.createFromAsset(getAssets(), "fonts/game_cube.ttf");
 
         placeShipText.setTypeface(exxaGameTypeFace);
         shipName.setTypeface(gameCubeTypeFace);
@@ -114,6 +111,8 @@ public class InsertShips extends AppCompatActivity implements View.OnClickListen
         quarterLowerRight.setOnClickListener(this);
 
         playerOceanPrinter.placeQuarters(currentQuarter);
+        playerOceanPrinter.startBackgroundAnimation();
+
         shipName.animate().alpha(1f).setDuration(OceanPrinter.SHORT_DURATION);
         cornersLeft.animate().alpha(0.3f).setDuration(OceanPrinter.SHORT_DURATION);
         cornersRight.animate().alpha(0.3f).setDuration(OceanPrinter.SHORT_DURATION);
@@ -123,7 +122,7 @@ public class InsertShips extends AppCompatActivity implements View.OnClickListen
     public void onPlaceShipClicked(View view) {
         if (placeShipButtonEnabled) {
             shipCounter++;
-            if (shipCounter < ShipType.values().length ) {
+            if (shipCounter < ShipType.values().length) {
                 nextShipAnimation();
                 orientation = Orientation.HORIZONTAL;
                 playerOceanPrinter.printOceanWhenAddingShips(shipTypes[shipCounter]);
@@ -136,6 +135,7 @@ public class InsertShips extends AppCompatActivity implements View.OnClickListen
 
     public void onNextClicked(View view) {
         if (nextButtonEnabled) {
+            findViewById(R.id.quarter_focus).setVisibility(View.INVISIBLE);
             Intent intent = new Intent(this, BattleActivity.class);
             DataHolder.getInstance().save(BattleActivity.ID_OCEAN, player.getOcean());
             DataHolder.getInstance().save(BattleActivity.ID_OPPONENT, player.getOpponent());
@@ -144,6 +144,9 @@ public class InsertShips extends AppCompatActivity implements View.OnClickListen
     }
 
     private void donePlacingShipsAnimation() {
+        final LinearLayout rotatePlaceShipButtons = findViewById(R.id.rotate_place_ship_buttons);
+        final LinearLayout container = findViewById(R.id.linear_layout_container);
+        playerOceanPrinter.stopBlinkingCurrentShip();
         placeShipButtonEnabled = false;
         rotateButtonEnabled = false;
         rotateButton.animate().alpha(0f).setDuration(OceanPrinter.SHORT_DURATION);
@@ -152,7 +155,9 @@ public class InsertShips extends AppCompatActivity implements View.OnClickListen
         placeShipButton.postDelayed(new Runnable() {
             @Override
             public void run() {
-                placeShipButton.animate().xBy(53f).setDuration(OceanPrinter.SHORT_DURATION);
+                rotateButton.setOnClickListener(null);
+                placeShipButton.setOnClickListener(null);
+                container.removeView(rotatePlaceShipButtons);
             }
         }, OceanPrinter.SHORT_DURATION);
         nextButton.animate().alpha(1f).setDuration(OceanPrinter.SHORT_DURATION);
@@ -161,20 +166,22 @@ public class InsertShips extends AppCompatActivity implements View.OnClickListen
     }
 
     private void nextShipAnimation() {
+        placeShipButtonEnabled = false;
+        rotateButtonEnabled = false;
         shipName.animate().alpha(0f).setDuration(OceanPrinter.SHORT_DURATION);
         cornersLeft.animate().alpha(0f).setDuration(OceanPrinter.SHORT_DURATION);
         cornersRight.animate().alpha(0f).setDuration(OceanPrinter.SHORT_DURATION);
         shipName.postDelayed(new Runnable() {
             @Override
             public void run() {
-                shipName.setText(shipTypes[shipCounter].toString());
-                shipName.animate().alpha(1f).setDuration(OceanPrinter.SHORT_DURATION);
-                cornersLeft.animate().alpha(0.3f).setDuration(OceanPrinter.SHORT_DURATION);
-                cornersRight.animate().alpha(0.3f).setDuration(OceanPrinter.SHORT_DURATION);
+                if (shipCounter < ShipType.values().length) {
+                    shipName.setText(shipTypes[shipCounter].toString());
+                    shipName.animate().alpha(1f).setDuration(OceanPrinter.SHORT_DURATION);
+                    cornersLeft.animate().alpha(0.3f).setDuration(OceanPrinter.SHORT_DURATION);
+                    cornersRight.animate().alpha(0.3f).setDuration(OceanPrinter.SHORT_DURATION);
+                }
             }
         }, OceanPrinter.SHORT_DURATION);
-        placeShipButtonEnabled = false;
-        rotateButtonEnabled = false;
         placeShipButton.animate().alpha(0.5f).setDuration(OceanPrinter.SHORT_DURATION);
         rotateButton.animate().alpha(0.5f).setDuration(OceanPrinter.SHORT_DURATION);
     }
@@ -188,12 +195,15 @@ public class InsertShips extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        int[] coords = KeyToCoordinateTranslator.translate(keyCode, currentQuarter);
-        lastCoordsInput = coords;
-        addShip(coords, orientation);
-        rotateButton.animate().alpha(1f).setDuration(OceanPrinter.SHORT_DURATION);
-        rotateButtonEnabled = true;
-        return true;
+        if (shipCounter != ShipType.values().length) {
+            int[] coords = KeyToCoordinateTranslator.translate(keyCode, currentQuarter);
+            lastCoordsInput = coords;
+            addShip(coords, orientation);
+            rotateButton.animate().alpha(1f).setDuration(OceanPrinter.SHORT_DURATION);
+            rotateButtonEnabled = true;
+            return true;
+        }
+        return false;
     }
 
     private Orientation getOppositeOrientation(Orientation orientation) {

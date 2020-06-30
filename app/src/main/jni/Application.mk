@@ -1,3 +1,3 @@
-APP_MODULES := 7segment
+APP_MODULES := fullcolorled
 
 APP_ABI := all

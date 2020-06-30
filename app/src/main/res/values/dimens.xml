@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="text_size_very_small">12sp</dimen>
     <dimen name="text_size_small">20sp</dimen>
     <dimen name="text_size_regular">25sp</dimen>
+    <dimen name="text_size_big">45sp</dimen>
     <dimen name="size_buttons">50dp</dimen>
     <dimen name="width_corners_top_small">130dp</dimen>
     <dimen name="height_corners_top_small">9dp</dimen>

@@ -1,25 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    tools:context=".GameOver">
+    tools:context=".GameOver"
+    android:background="@drawable/ic_background"
+    android:foregroundGravity="center" >
 
-    <TextView
-        android:id="@+id/game_over_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="25sp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center" >
 
-    <Button
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/corners_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:alpha="0"
+            android:layout_marginHorizontal="@dimen/margin_regular" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/height_corners_top_small"
+                android:contentDescription="@string/corners"
+                android:src="@drawable/ic_corner"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/height_corners_top_small"
+                android:contentDescription="@string/corners"
+                android:rotation="90"
+                android:src="@drawable/ic_corner"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/you_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size_big"
+            android:text="@string/you"
+            android:textColor="@color/colorPrimary"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:alpha="0" />
+
+        <TextView
+            android:id="@+id/winner_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size_big"
+            android:textColor="@color/colorPrimary"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:alpha="0" />
+
+        <TextView
+            android:id="@+id/game_over_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size_very_small"
+            android:text="@string/game_over"
+            android:textColor="@color/colorPrimary"
+            android:alpha="0" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/corners_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:alpha="0"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginHorizontal="@dimen/margin_regular" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/height_corners_top_small"
+                android:contentDescription="@string/corners"
+                android:src="@drawable/ic_corner"
+                android:rotation="270"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/height_corners_top_small"
+                android:contentDescription="@string/corners"
+                android:rotation="180"
+                android:src="@drawable/ic_corner"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+    <ImageView
         android:id="@+id/play_again"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/play_again"
-        android:textAllCaps="true"
-        android:layout_marginTop="30dp"
-        android:onClick="onPlayAgainClicked"/>
-</LinearLayout>
+        android:layout_width="@dimen/size_buttons"
+        android:layout_height="@dimen/size_buttons"
+        android:scaleType="fitXY"
+        android:onClick="onPlayAgainClicked"
+        android:layout_gravity="center"
+        android:layout_marginBottom="10dp"
+        android:contentDescription="@string/rotate"
+        android:alpha="0"
+        android:src="@mipmap/rotate_button" />
+
+    <ImageView
+        android:id="@+id/bubbles_1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_bubbles_1"
+        android:contentDescription="@string/corners" />
+
+    <ImageView
+        android:id="@+id/bubbles_2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:alpha="0.6"
+        android:src="@drawable/ic_bubbles_2"
+        android:contentDescription="@string/corners" />
+
+    <ImageView
+        android:id="@+id/bubbles_3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:alpha="0.7"
+        android:src="@drawable/ic_bubbles_3"
+        android:contentDescription="@string/corners" />
+
+</FrameLayout>
