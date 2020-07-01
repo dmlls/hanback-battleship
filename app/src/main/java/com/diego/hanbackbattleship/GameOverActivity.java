@@ -3,7 +3,6 @@ package com.diego.hanbackbattleship;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import android.animation.ObjectAnimator;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -13,18 +12,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.diego.hanbackbattleship.miscellaneous.OceanPrinter;
 
-import org.w3c.dom.Text;
-
 import java.util.Random;
 
-public class GameOver extends AppCompatActivity {
+public class GameOverActivity extends AppCompatActivity {
 
     public static final String EXTRA_WINNER = "winner";
 
@@ -90,8 +85,8 @@ public class GameOver extends AppCompatActivity {
             public void run() {
                 gameOverText.setVisibility(View.VISIBLE);
                 gameOverText.animate().alpha(0.6f).setDuration(OceanPrinter.SHORT_DURATION);
-                cornersTop.animate().alpha(0.3f).setDuration(OceanPrinter.MEDIUM_DURATION);
-                cornersBottom.animate().alpha(0.3f).setDuration(OceanPrinter.MEDIUM_DURATION);
+                cornersTop.animate().alpha(0.3f).setDuration(OceanPrinter.INTERMEDIATE_DURATION);
+                cornersBottom.animate().alpha(0.3f).setDuration(OceanPrinter.INTERMEDIATE_DURATION);
             }
         }, OceanPrinter.SHORT_DURATION);
         handler.postDelayed(new Runnable() {
@@ -99,7 +94,7 @@ public class GameOver extends AppCompatActivity {
             public void run() {
                 setPlayAgain();
             }
-        }, OceanPrinter.LONG_DURATION);
+        }, OceanPrinter.VERY_LONG_DURATION);
     }
 
     private void setPlayAgain() {
@@ -122,16 +117,16 @@ public class GameOver extends AppCompatActivity {
                 gameOverText.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        gameOverText.animate().alpha(1f).setDuration(OceanPrinter.MEDIUM_DURATION);
+                        gameOverText.animate().alpha(1f).setDuration(OceanPrinter.INTERMEDIATE_DURATION);
                     }
-                }, OceanPrinter.MEDIUM_DURATION);
+                }, OceanPrinter.INTERMEDIATE_DURATION);
             }
-        }, OceanPrinter.MEDIUM_DURATION);
+        }, OceanPrinter.INTERMEDIATE_DURATION);
     }
 
     public void onPlayAgainClicked(View view) { // restart app
         if (restartAppEnabled) {
-            Intent mStartActivity = new Intent(this, InsertShips.class);
+            Intent mStartActivity = new Intent(this, InsertShipsActivity.class);
             int mPendingIntentId = 123456;
             PendingIntent mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, mStartActivity,
                     PendingIntent.FLAG_CANCEL_CURRENT);

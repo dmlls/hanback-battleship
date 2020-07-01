@@ -165,7 +165,7 @@
         android:id="@+id/quarter_focus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@mipmap/quarter_focus" />
+        android:background="@drawable/ic_quarter_focus" />
 
     <View
         android:id="@+id/quarter_1"

@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.diego.hanbackbattleship.control.AutonomousPlayer;
 import com.diego.hanbackbattleship.control.AutonomousPlayerIntelligent;
+import com.diego.hanbackbattleship.control.Difficulty;
 import com.diego.hanbackbattleship.control.Player;
 import com.diego.hanbackbattleship.miscellaneous.DataHolder;
 import com.diego.hanbackbattleship.miscellaneous.KeyToCoordinateTranslator;
@@ -38,7 +39,6 @@ public class BattleActivity extends AppCompatActivity implements View.OnClickLis
 
     private Player player;
     private AutonomousPlayer opponent;
-  //  private AutonomousPlayerIntelligent opponent;
 
     private OceanPrinter playerOceanPrinter;
     private OceanPrinter opponentOceanPrinter;
@@ -77,8 +77,18 @@ public class BattleActivity extends AppCompatActivity implements View.OnClickLis
 
         player = new Player((Ocean) DataHolder.getInstance().retrieve(ID_OCEAN),
                                 (Player) DataHolder.getInstance().retrieve(ID_OPPONENT), 0);
-        opponent = new AutonomousPlayer();
-     //   opponent = new AutonomousPlayerIntelligent(player.getOcean());
+
+        switch ((Difficulty) DataHolder.getInstance().retrieve(SelectDifficultyActivity.DIFFICULTY_ID)) {
+            default:
+            case EASY:
+                opponent = new AutonomousPlayer();
+                break;
+            case NORMAL:
+                opponent = new AutonomousPlayerIntelligent(player.getOcean(), false);
+            case DIFFICULT:
+                opponent = new AutonomousPlayerIntelligent(player.getOcean(), false);
+        }
+
 
         player.setOpponent(opponent);
         opponent.setOpponent(player);
@@ -113,7 +123,7 @@ public class BattleActivity extends AppCompatActivity implements View.OnClickLis
 
         resultText.setTypeface(doctorGlitch);
 
-        opponentOceanPrinter.printOceanVisited(); // the player sees their opponent's ocean and vice-versa
+        opponentOceanPrinter.printOceanVisitedWithShips(); // the player sees their opponent's ocean and vice-versa // TODO: quitar withSHips
         opponentOceanPrinter.fadeInQuarterFocus();
     }
 
@@ -214,8 +224,8 @@ public class BattleActivity extends AppCompatActivity implements View.OnClickLis
     public void onNextClicked(View view) {
         if (nextButtonEnabled) {
             if (isGameFinished()) {
-                Intent intent = new Intent(this, GameOver.class);
-                intent.putExtra(GameOver.EXTRA_WINNER, getWinner().equals(player));
+                Intent intent = new Intent(this, GameOverActivity.class);
+                intent.putExtra(GameOverActivity.EXTRA_WINNER, getWinner().equals(player));
                 startActivity(intent);
             } else {
                 changeTurn();
@@ -232,10 +242,10 @@ public class BattleActivity extends AppCompatActivity implements View.OnClickLis
                                 public void run() {
                                     updateUIAfterShooting(result);
                                 }
-                            }, OceanPrinter.SHOOTING_ANIMATION_DURATION + OceanPrinter.SHORT_DURATION);
+                            }, OceanPrinter.SHOOTING_ANIMATION_DURATION + OceanPrinter.INTERMEDIATE_DURATION);
                             opponentOceanPrinter.fadeOutQuarterFocus();
                         }
-                    }, OceanPrinter.CHANGE_TURN_ANIMATION_DURATION + OceanPrinter.SHORT_DURATION);
+                    }, OceanPrinter.CHANGE_TURN_ANIMATION_DURATION + OceanPrinter.INTERMEDIATE_DURATION);
                 }
                 keyAlreadyPressed = false;
             }
@@ -261,7 +271,7 @@ public class BattleActivity extends AppCompatActivity implements View.OnClickLis
                     public void run() {
                         updateUIAfterShooting(result);
                     }
-                }, OceanPrinter.SHOOTING_ANIMATION_DURATION);
+                }, OceanPrinter.SHOOTING_ANIMATION_DURATION + OceanPrinter.INTERMEDIATE_DURATION);
                 System.out.println(player.getScore());
                 keyAlreadyPressed = true;
                 return true;

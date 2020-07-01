@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SelectDifficultyActivity"
+    android:id="@+id/frame_layout"
+    android:background="@drawable/ic_background"
+    android:foregroundGravity="center_horizontal" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/difficulty_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:alpha="0"
+            android:layout_marginBottom="@dimen/margin_regular"
+            android:layout_marginTop="@dimen/margin_regular_negative" >
+            <ImageView
+                android:layout_width="@dimen/width_corners_left_right"
+                android:layout_height="@dimen/height_corners_left_right"
+                android:src="@drawable/ic_corners_left"
+                android:contentDescription="@string/corners"
+                android:alpha="0.3" />
+            <TextView
+                android:id="@+id/difficulty_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_size_small"
+                android:text="@string/difficulty"
+                android:textAllCaps="true"
+                android:textColor="@color/colorPrimary"
+                android:layout_marginLeft="@dimen/margin_very_small"
+                android:layout_marginRight="@dimen/margin_very_small"
+                android:layout_marginBottom="1dp" />
+            <ImageView
+                android:layout_width="@dimen/width_corners_left_right"
+                android:layout_height="@dimen/height_corners_left_right"
+                android:src="@drawable/ic_corners_right"
+                android:contentDescription="@string/corners"
+                android:alpha="0.3" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/easy_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size_regular"
+            android:text="@string/easy"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimary"
+            android:layout_marginTop="@dimen/margin_big"
+            android:alpha="0"
+            android:onClick="onClick" />
+        <TextView
+            android:id="@+id/normal_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size_regular"
+            android:text="@string/normal"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimary"
+            android:layout_marginTop="@dimen/margin_big"
+            android:alpha="0"
+            android:onClick="onClick" />
+
+        <TextView
+            android:id="@+id/difficult_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size_regular"
+            android:text="@string/difficult"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimary"
+            android:layout_marginTop="@dimen/margin_big"
+            android:alpha="0"
+            android:onClick="onClick" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/bubbles_1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_bubbles_1"
+        android:contentDescription="@string/corners" />
+
+    <ImageView
+        android:id="@+id/bubbles_2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:alpha="0.6"
+        android:src="@drawable/ic_bubbles_2"
+        android:contentDescription="@string/corners" />
+
+    <ImageView
+        android:id="@+id/bubbles_3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:alpha="0.7"
+        android:src="@drawable/ic_bubbles_3"
+        android:contentDescription="@string/corners" />
+
+</FrameLayout>

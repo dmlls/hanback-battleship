@@ -1,8 +1,11 @@
 <resources>
     <string name="app_name">Hanback Battleship</string>
+    <string name="difficulty">difficulty</string>
+    <string name="easy">easy</string>
+    <string name="normal">normal</string>
+    <string name="difficult">difficult</string>
     <string name="place_ship">Place ship</string>
-    <string name="coordinateX">Coordinate X</string>
-    <string name="coordinateY">Coordinate Y</string>
+    <string name="ready">READY!</string>
     <string name="corners">corners</string>
     <string name="bubbles">bubbles</string>
     <string name="ocean">ocean</string>

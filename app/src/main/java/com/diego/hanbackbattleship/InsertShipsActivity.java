@@ -20,7 +20,7 @@ import com.diego.hanbackbattleship.miscellaneous.OceanPrinter;
 import com.diego.hanbackbattleship.model.Orientation;
 import com.diego.hanbackbattleship.model.ShipType;
 
-public class InsertShips extends AppCompatActivity implements View.OnClickListener {
+public class InsertShipsActivity extends AppCompatActivity implements View.OnClickListener {
     private Player player;
     private ShipType[] shipTypes;
     private int shipCounter;
@@ -92,6 +92,7 @@ public class InsertShips extends AppCompatActivity implements View.OnClickListen
 
         placeShipText.setTypeface(exxaGameTypeFace);
         shipName.setTypeface(gameCubeTypeFace);
+        ((TextView) findViewById(R.id.ready_text)).setTypeface(gameCubeTypeFace);
 
         playerOceanPrinter.printOceanWhenAddingShips();
     }
@@ -146,22 +147,27 @@ public class InsertShips extends AppCompatActivity implements View.OnClickListen
     private void donePlacingShipsAnimation() {
         final LinearLayout rotatePlaceShipButtons = findViewById(R.id.rotate_place_ship_buttons);
         final LinearLayout container = findViewById(R.id.linear_layout_container);
+        findViewById(R.id.corners_top_small).animate().alpha(0f).setDuration(OceanPrinter.SHORT_DURATION);
+        findViewById(R.id.place_ship_text).animate().alpha(0f).setDuration(OceanPrinter.SHORT_DURATION);
+        findViewById(R.id.ship_type_container).animate().alpha(0f).setDuration(OceanPrinter.SHORT_DURATION);
+        shipName.animate().alpha(1f).setDuration(OceanPrinter.SHORT_DURATION);
         playerOceanPrinter.stopBlinkingCurrentShip();
         placeShipButtonEnabled = false;
         rotateButtonEnabled = false;
         rotateButton.animate().alpha(0f).setDuration(OceanPrinter.SHORT_DURATION);
         placeShipButton.animate().alpha(0f).setDuration(OceanPrinter.SHORT_DURATION);
         placeShipButton.animate().xBy(-53f).setDuration(OceanPrinter.SHORT_DURATION);
+        nextButton.animate().alpha(1f).setDuration(OceanPrinter.SHORT_DURATION);
+        nextButton.animate().xBy(-53f).setDuration(OceanPrinter.SHORT_DURATION);
         placeShipButton.postDelayed(new Runnable() {
             @Override
             public void run() {
+                findViewById(R.id.ready).animate().alpha(1f).setDuration(OceanPrinter.SHORT_DURATION);
                 rotateButton.setOnClickListener(null);
                 placeShipButton.setOnClickListener(null);
                 container.removeView(rotatePlaceShipButtons);
             }
         }, OceanPrinter.SHORT_DURATION);
-        nextButton.animate().alpha(1f).setDuration(OceanPrinter.SHORT_DURATION);
-        nextButton.animate().xBy(-53f).setDuration(OceanPrinter.SHORT_DURATION);
         nextButtonEnabled = true;
     }
 
