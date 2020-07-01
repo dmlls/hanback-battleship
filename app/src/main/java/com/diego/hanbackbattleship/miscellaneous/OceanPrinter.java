@@ -15,9 +15,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.constraintlayout.widget.ConstraintLayout;
-
-import com.diego.hanbackbattleship.BattleActivity;
 import com.diego.hanbackbattleship.R;
 import com.diego.hanbackbattleship.control.Player;
 import com.diego.hanbackbattleship.model.Ocean;
@@ -36,15 +33,16 @@ public class OceanPrinter {
 
     private static final int HORIZONTAL_MARGIN = 13;
 
-    private static final int QUARTER_FOCUS_BLINKING_DURATION = 3000;
+    private static final int QUARTER_FOCUS_BLINKING_DURATION = 2000;
     private static final int SHIP_BLINKING_DURATION = 700;
     private static final int MOVEMENT_DURATION = 600;
-    public static final int SHOOTING_ANIMATION_DURATION = 1500;
+    public static final int SHOOTING_ANIMATION_DURATION = 1200;
     public static final int CHANGE_TURN_ANIMATION_DURATION = 500;
     public static final int VERY_SHORT_DURATION = 200;
     public static final int SHORT_DURATION = 500;
-    public static final int MEDIUM_DURATION = 1000;
-    public static final int LONG_DURATION = 3000;
+    public static final int INTERMEDIATE_DURATION = 1000;
+    public static final int LONG_DURATION = 2000;
+    public static final int VERY_LONG_DURATION = 3000;
 
     private HashMap<ShipType, int[]> shipInitialCoordinates;
 
@@ -75,12 +73,11 @@ public class OceanPrinter {
     private Drawable[] submarine = new Drawable[3];
     private Drawable[] submarineSunken = new Drawable[3];
     private GifDrawable shooting;
-    private GifDrawable shootHit;
-    private GifDrawable shipHit;
+    private GifDrawable shotHit;
+    private Drawable shipHit;
     private GifDrawable shipSunk;
-    private GifDrawable shootWater;
-    private Drawable sea;
     private Drawable water;
+    private Drawable alreadyHit;
 
     private ImageView bubbles1;
     private ImageView bubbles2;
@@ -153,14 +150,11 @@ public class OceanPrinter {
         submarineSunken[1] = context.getResources().getDrawable(R.drawable.ic_submarine_sunken_2);
         submarineSunken[2] = context.getResources().getDrawable(R.drawable.ic_submarine_sunken_3);
 
-        shooting = new GifDrawable(context.getResources(), R.raw.shooting);
-        shootHit = new GifDrawable(context.getResources(), R.raw.shoot_hit);
-        shipHit = new GifDrawable(context.getResources(), R.raw.ship_hit);
-        shipSunk = new GifDrawable(context.getResources(), R.raw.ship_sunk);
-        shootWater = new GifDrawable(context.getResources(), R.raw.shoot_water);
+        shotHit = new GifDrawable(context.getResources(), R.raw.ship_sunk);
+        shipHit = context.getResources().getDrawable(R.drawable.ic_ship_hit);
 
-        sea = context.getResources().getDrawable(R.drawable.ic_sea);
         water = context.getResources().getDrawable(R.drawable.ic_cross);
+        alreadyHit = context.getResources().getDrawable(R.drawable.ic_already_hit);
 
         sizeOfCell = Math.round((float) context.getResources().getDisplayMetrics().widthPixels / oceanSize) - HORIZONTAL_MARGIN;
 
@@ -347,8 +341,7 @@ public class OceanPrinter {
                 OceanCell cell = ocean.getCell(i, j);
                 // Fill the base layout
                 if (cell.getShip() != null) {
-                    int slice = cell.getShipSlice();
-                    ivBaseCells[i][j].setImageDrawable(getShipDrawables(cell.getShip().getType())[slice]);
+                    ivBaseCells[i][j].setImageDrawable(getShipDrawables(cell.getShip().getType())[cell.getShipSlice()]);
                     ivBaseCells[i][j].setAlpha(0.5f);
                     if (cell.getShip().getOrientation().equals(Orientation.VERTICAL)) {
                         ivBaseCells[i][j].setRotation(90f);
@@ -358,21 +351,11 @@ public class OceanPrinter {
                 }*/
                 // Fill the top layout
                 if (cell.wasVisited()) {
-                    switch (cell.getShipStateInCell()) {
-                        case NO_SHIP:
-                            ivTopCells[i][j].setImageDrawable(water);
-                            break;
-                        case HIT:
-                            ivTopCells[i][j].setImageDrawable(shipHit);
-                            break;
-                        case SUNKEN:
-                            int slice = cell.getShipSlice();
-                            Drawable[] shipDrawable = getShipSunkenDrawables(cell.getShip().getType());
-                            ivTopCells[i][j].setImageDrawable(shipDrawable[slice]);
-                            if (cell.getShip().getOrientation().equals(Orientation.VERTICAL)) {
-                                ivTopCells[i][j].setRotation(90f);
-                            }
-                            break;
+                    Drawable drawable = getDrawableFromCellState(cell);
+                    ivTopCells[i][j].setImageDrawable(drawable);
+                    if (cell.getShip() != null && cell.getShip().getOrientation().equals(Orientation.VERTICAL) &&
+                            cell.getShipStateInCell().equals(ShipState.SUNKEN)) {
+                        ivTopCells[i][j].setRotation(90f);
                     }
                 }
                 linRowBase.addView(ivBaseCells[i][j], cellParams);
@@ -395,21 +378,11 @@ public class OceanPrinter {
                 ivBaseCells[i][j] = new ImageView(context);
                 OceanCell cell = ocean.getCell(i, j);
                 if (cell.wasVisited()) {
-                    switch (cell.getShipStateInCell()) {
-                        case NO_SHIP:
-                            ivBaseCells[i][j].setImageDrawable(water);
-                            break;
-                        case HIT:
-                            ivBaseCells[i][j].setImageDrawable(shipHit);
-                            break;
-                        case SUNKEN:
-                            int slice = cell.getShipSlice();
-                            Drawable[] shipDrawable = getShipSunkenDrawables(cell.getShip().getType());
-                            ivBaseCells[i][j].setImageDrawable(shipDrawable[slice]);
-                            if (cell.getShip().getOrientation().equals(Orientation.VERTICAL)) {
-                                ivBaseCells[i][j].setRotation(90f);
-                            }
-                            break;
+                    Drawable drawable = getDrawableFromCellState(cell);
+                    ivBaseCells[i][j].setImageDrawable(drawable);
+                    if (cell.getShip() != null && cell.getShip().getOrientation().equals(Orientation.VERTICAL) &&
+                            cell.getShipStateInCell().equals(ShipState.SUNKEN)) {
+                        ivBaseCells[i][j].setRotation(90f);
                     }
                 } /*else {
                     ivBaseCells[i][j].setImageDrawable(sea);
@@ -420,34 +393,69 @@ public class OceanPrinter {
         }
     }
 
+    private Drawable getDrawableFromCellState(OceanCell cell) {
+        switch (cell.getShipStateInCell()) {
+            default:
+            case NO_SHIP:
+                return water;
+            case HIT:
+                return shipHit;
+            case SUNKEN:
+                int slice = cell.getShipSlice();
+                Drawable[] shipDrawable = getShipSunkenDrawables(cell.getShip().getType());
+                return shipDrawable[slice];
+        }
+    }
+
     public void playShootingAnimation(final int[] boardCoords, final ShipState result, final boolean printShips) {
         final FrameLayout rootFrameLayout = ((Activity) context).findViewById(R.id.root_frame_layout);
         final ImageView ivCell = getCellImageView(boardCoords);
-        if (printShips) {
-            printOceanVisitedWithShips();
-        } else {
-            printOceanVisited();
-        }
+
         resultTextAnimation(result);
-        if (result.equals(ShipState.NO_SHIP)) {
-            ivCell.setImageDrawable(shootWater);
-        } else { // HIT or SUNKEN
-            ivCell.setImageDrawable(shootHit);
+
+        try {
+            if (result.equals(ShipState.NO_SHIP)) {
+                GifDrawable shotWater = new GifDrawable(context.getResources(), R.raw.shot_water);
+                shotWater.setAlpha(220);
+                ivCell.setImageDrawable(shotWater);
+            } else { // HIT or SUNKEN
+                GifDrawable shotHit = new GifDrawable(context.getResources(), R.raw.shot_hit);
+                shotHit.setAlpha(220);
+                ivCell.setImageDrawable(shotHit);
+            }
+        } catch (IOException e) {
+            ivCell.setImageDrawable(water);
         }
         rootFrameLayout.addView(ivCell);
         ivCell.postDelayed(new Runnable() {
             @Override
             public void run() {
-                ivCell.setImageDrawable(null);
-                rootFrameLayout.removeView(ivCell);
-                if (result.equals(ShipState.SUNKEN)) {
-                    playSunkenAnimation(boardCoords);
-                }
-                if (printShips) {
-                    printOceanVisitedWithShips();
+                if (!result.equals(ShipState.SUNKEN)) {
+                    ivCell.setImageDrawable(getDrawableFromCellState(ocean.getCell(boardCoords[0], boardCoords[1])));
                 } else {
-                    printOceanVisited();
+                    ivCell.setImageDrawable(shipHit);
                 }
+                ivCell.setAlpha(0f);
+                ivCell.animate().alpha(1f).setDuration(SHORT_DURATION);
+                ivCell.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (result.equals(ShipState.SUNKEN)) {
+                            playSunkenAnimation(boardCoords);
+                        }
+                        ivCell.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (printShips) {
+                                    printOceanVisitedWithShips();
+                                } else {
+                                    printOceanVisited();
+                                }
+                                rootFrameLayout.removeView(ivCell);
+                            }
+                        }, SHORT_DURATION);
+                    }
+                }, SHORT_DURATION);
             }
         }, SHOOTING_ANIMATION_DURATION);
     }
@@ -510,9 +518,21 @@ public class OceanPrinter {
             ivCells[i].postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    ivCells[index].setImageDrawable(shipSunk);
+                    try {
+                        GifDrawable shotHit = new GifDrawable(context.getResources(), R.raw.shot_hit);
+                        shotHit.setAlpha(220);
+                        ivCells[index].setImageDrawable(shotHit);
+                        ivCells[index].postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                ivCells[index].animate().alpha(0f).setDuration(SHORT_DURATION);
+                            }
+                        }, SHORT_DURATION);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }, index * 100);
+            }, index * 150);
             ivCells[i].postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -608,8 +628,7 @@ public class OceanPrinter {
         oceanBaseLayout.getLocationOnScreen(oceanLayoutCoordsOnScreen);
         final ImageView cell = new ImageView(context);
         cell.setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-        cell.setImageDrawable(water);
-        cell.getDrawable().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
+        cell.setImageDrawable(alreadyHit);
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(sizeOfCell, sizeOfCell);
         int leftMarginOffset = oceanLayoutCoordsOnScreen[0] - frameLayoutCoordsOnScreen[0];
         layoutParams.setMargins(coords[1] * sizeOfCell + leftMarginOffset, coords[0] * sizeOfCell, 0, 0);
@@ -620,13 +639,13 @@ public class OceanPrinter {
         cell.postDelayed(new Runnable() {
             @Override
             public void run() {
-                cell.animate().alpha(0f).setDuration(MEDIUM_DURATION);
+                cell.animate().alpha(0f).setDuration(INTERMEDIATE_DURATION);
                 cell.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         container.removeView(cell);
                     }
-                }, MEDIUM_DURATION);
+                }, INTERMEDIATE_DURATION);
             }
         }, SHORT_DURATION);
     }
@@ -668,7 +687,7 @@ public class OceanPrinter {
         placeQuarters(quarterLowerRight, KeypadQuarter.LOWER_RIGHT, oceanCoords, size);
         placeQuarters(quarterFocus, currentQuarter, oceanCoords, size);
 
-        startBlinking(quarterFocus, QUARTER_FOCUS_BLINKING_DURATION, 0.5f, 1f);
+        startBlinking(quarterFocus, QUARTER_FOCUS_BLINKING_DURATION, 0.3f, 0.8f);
     }
 
     private void placeQuarters(View view, KeypadQuarter quarter, int[] oceanCoords, int size) {
@@ -727,12 +746,12 @@ public class OceanPrinter {
     }
 
     public void startBackgroundAnimation() {
-        startBlinking(bubbles1, LONG_DURATION / 2, 0.5f, 0.8f);
+        startBlinking(bubbles1, VERY_LONG_DURATION / 2, 0.5f, 0.8f);
         startBlinking(bubbles2, SHORT_DURATION * 2, 0.2f, 0.6f);
         startBlinking(bubbles3, SHORT_DURATION * 3, 0.3f, 0.7f);
-        startRotation(bubbles1, LONG_DURATION * 15, 210f, 0f);
-        startRotation(bubbles2, LONG_DURATION * 13, 0f, 200f);
-        startRotation(bubbles3, LONG_DURATION * 14, 0f, 150f);
+        startRotation(bubbles1, VERY_LONG_DURATION * 15, 210f, 0f);
+        startRotation(bubbles2, VERY_LONG_DURATION * 13, 0f, 200f);
+        startRotation(bubbles3, VERY_LONG_DURATION * 14, 0f, 150f);
     }
 
     public int getSizeOfCell() {

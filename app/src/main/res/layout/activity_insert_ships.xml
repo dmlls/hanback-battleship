@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".InsertShips"
+    tools:context=".InsertShipsActivity"
     android:id="@+id/frame_layout"
     android:background="@drawable/ic_background"
     android:foregroundGravity="center_horizontal" >
@@ -51,6 +51,7 @@
             android:gravity="center_horizontal"
             android:layout_marginTop="@dimen/margin_big" >
             <ImageView
+                android:id="@+id/corners_top_small"
                 android:layout_width="@dimen/width_corners_top_small"
                 android:layout_height="@dimen/height_corners_top_small"
                 android:contentDescription="@string/corners"
@@ -66,6 +67,7 @@
                 android:textColor="@color/colorPrimary" />
 
             <LinearLayout
+                android:id="@+id/ship_type_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -190,7 +192,40 @@
         android:id="@+id/quarter_focus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@mipmap/quarter_focus" />
+        android:background="@drawable/ic_quarter_focus" />
+
+    <LinearLayout
+        android:id="@+id/ready"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="70dp"
+        android:alpha="0">
+        <ImageView
+            android:layout_width="@dimen/width_corners_left_right"
+            android:layout_height="@dimen/height_corners_left_right"
+            android:src="@drawable/ic_corners_left"
+            android:contentDescription="@string/corners"
+            android:alpha="0.3" />
+        <TextView
+            android:id="@+id/ready_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ready"
+            android:textSize="@dimen/text_size_small"
+            android:textColor="@color/colorPrimary"
+            android:layout_marginLeft="@dimen/text_size_regular"
+            android:layout_marginRight="@dimen/text_size_regular"
+            android:layout_marginBottom="1dp" />
+        <ImageView
+            android:layout_width="@dimen/width_corners_left_right"
+            android:layout_height="@dimen/height_corners_left_right"
+            android:src="@drawable/ic_corners_right"
+            android:contentDescription="@string/corners"
+            android:alpha="0.3" />
+    </LinearLayout>
 
     <View
         android:id="@+id/quarter_1"

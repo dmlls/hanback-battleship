@@ -52,6 +52,10 @@ public class OceanCell {
         this.visited = visited;
     }
 
+    public OceanCell shallowCopy() {
+        return new OceanCell(coordinates);
+    }
+
     @Override
     public String toString() {
         return "[" + String.valueOf(coordinates[0] + ", " + String.valueOf(coordinates[1]) + "]");
