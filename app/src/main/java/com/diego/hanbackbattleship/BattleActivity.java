@@ -123,7 +123,11 @@ public class BattleActivity extends AppCompatActivity implements View.OnClickLis
 
         resultText.setTypeface(doctorGlitch);
 
+<<<<<<< HEAD
+        opponentOceanPrinter.printOceanVisited(); // the player sees their opponent's ocean and vice-versa
+=======
         opponentOceanPrinter.printOceanVisitedWithShips(); // the player sees their opponent's ocean and vice-versa // TODO: quitar withSHips
+>>>>>>> master
         opponentOceanPrinter.fadeInQuarterFocus();
     }
 
@@ -236,6 +240,10 @@ public class BattleActivity extends AppCompatActivity implements View.OnClickLis
                         public void run() {
                             final ShipState result = opponent.launchMissile();
                             final int[] coords = opponent.getLastShotCoordinates();
+<<<<<<< HEAD
+                            System.out.println("Coords: [" + coords[0] + ", " + coords[1] + "] Result: " + result);
+=======
+>>>>>>> master
                             playerOceanPrinter.playShootingAnimation(coords, result, true);
                             handler.postDelayed(new Runnable() {
                                 @Override
@@ -272,7 +280,10 @@ public class BattleActivity extends AppCompatActivity implements View.OnClickLis
                         updateUIAfterShooting(result);
                     }
                 }, OceanPrinter.SHOOTING_ANIMATION_DURATION + OceanPrinter.INTERMEDIATE_DURATION);
+<<<<<<< HEAD
+=======
                 System.out.println(player.getScore());
+>>>>>>> master
                 keyAlreadyPressed = true;
                 return true;
             }

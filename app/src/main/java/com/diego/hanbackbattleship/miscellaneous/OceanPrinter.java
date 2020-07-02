@@ -346,9 +346,13 @@ public class OceanPrinter {
                     if (cell.getShip().getOrientation().equals(Orientation.VERTICAL)) {
                         ivBaseCells[i][j].setRotation(90f);
                     }
+<<<<<<< HEAD
+                }
+=======
                 } /*else {
                     ivBaseCells[i][j].setImageDrawable(sea);
                 }*/
+>>>>>>> master
                 // Fill the top layout
                 if (cell.wasVisited()) {
                     Drawable drawable = getDrawableFromCellState(cell);
@@ -384,9 +388,13 @@ public class OceanPrinter {
                             cell.getShipStateInCell().equals(ShipState.SUNKEN)) {
                         ivBaseCells[i][j].setRotation(90f);
                     }
+<<<<<<< HEAD
+                }
+=======
                 } /*else {
                     ivBaseCells[i][j].setImageDrawable(sea);
                 } */
+>>>>>>> master
                 linRowBase.addView(ivBaseCells[i][j], cellParams);
             }
             oceanBaseLayout.addView(linRowBase, oceanRowParams);
@@ -542,6 +550,8 @@ public class OceanPrinter {
         }
     }
 
+<<<<<<< HEAD
+=======
     public void playChangeTurnAnimation(final OceanPrinter opponentOceanPrinter, final boolean displayShipsAfterAnimation) { }
 
     /*
@@ -565,12 +575,15 @@ public class OceanPrinter {
         }, CHANGE_TURN_ANIMATION_DURATION / 2);
     } */
 
+>>>>>>> master
     public void printOceanWhenAddingShips() {
         LinearLayout.LayoutParams cellParams = new LinearLayout.LayoutParams(sizeOfCell, sizeOfCell);
         LinearLayout.LayoutParams oceanRowParams = new LinearLayout.LayoutParams(sizeOfCell * oceanSize, sizeOfCell);
 
         clearLayouts();
 
+<<<<<<< HEAD
+=======
      /*   for (int i = 0; i < oceanSize; i++) {
             LinearLayout linRow = new LinearLayout(context);
             for (int j = 0; j < oceanSize; j++) {
@@ -580,6 +593,7 @@ public class OceanPrinter {
             }
             oceanBaseLayout.addView(linRow, oceanRowParams);
         }*/
+>>>>>>> master
         for (Ship ship : ocean.getShips()) {
             displayShipWhenAddingShips(ship);
             LinearLayout shipLayout = getShipLinearLayout(ship.getType());

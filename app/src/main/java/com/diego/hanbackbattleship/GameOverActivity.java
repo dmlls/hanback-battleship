@@ -126,7 +126,7 @@ public class GameOverActivity extends AppCompatActivity {
 
     public void onPlayAgainClicked(View view) { // restart app
         if (restartAppEnabled) {
-            Intent mStartActivity = new Intent(this, InsertShipsActivity.class);
+            Intent mStartActivity = new Intent(this, SelectDifficultyActivity.class);
             int mPendingIntentId = 123456;
             PendingIntent mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, mStartActivity,
                     PendingIntent.FLAG_CANCEL_CURRENT);
