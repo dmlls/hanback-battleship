@@ -34,11 +34,6 @@ public class AutonomousPlayerIntelligent extends AutonomousPlayer {
     @Override
     public ShipState launchMissile() {
         if (shipFound) {
-<<<<<<< HEAD
-=======
-            System.out.println("SHIP FOUND: " + shipFound);
-            System.out.println("SHIP TARGET: " + targetShip);
->>>>>>> master
             OceanCell randomCell;
     /*        int i = 0;
             do {
@@ -47,23 +42,15 @@ public class AutonomousPlayerIntelligent extends AutonomousPlayer {
                 if (i > 99) {
                     break;
                 }
-<<<<<<< HEAD
-=======
-                System.out.println(i);
->>>>>>> master
             } while (!unvisitedCells.contains(randomCell));
             targetShipCells.add(randomCell); // add random cells to make it less obvious */
             targetShipCells.add(unvisitedCells.remove(random.nextInt(unvisitedCells.size()))); // add random cells to make it less obvious
             lastCellHit = targetShipCells.remove(random.nextInt(targetShipCells.size()));
             unvisitedCells.remove(lastCellHit);
             ShipState result = callSuperLaunchMissile(lastCellHit);
-<<<<<<< HEAD
             while (result == null) {
                 result =  super.launchMissile(); // launch randomly
             }
-=======
-            System.out.println("LAST CELL: " + lastCellHit.getCoordinates()[0] + " " +lastCellHit.getCoordinates()[1]);
->>>>>>> master
             if (lastCellHit.getShipStateInCell().equals(ShipState.SUNKEN)) {
                 shipFound = false;
             }
